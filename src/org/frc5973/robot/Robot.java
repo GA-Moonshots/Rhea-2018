@@ -1,14 +1,22 @@
-/* Created Wed Jan 10 16:54:20 EST 2018 */
+/* 
+ * Team 5973, Moonshots
+ * 2018 - Rhea
+ * Software Captain: Sebastian Williams
+ */
 package org.frc5973.robot;
 
 import org.strongback.Strongback;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 
 public class Robot extends IterativeRobot {
 
+	private int position;
+	
     @Override
     public void robotInit() {
+    	position = (int)SmartDashboard.getNumber("Position", 1);
     }
 
     @Override
