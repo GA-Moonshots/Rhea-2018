@@ -6,22 +6,36 @@
 package org.frc5973.robot;
 
 import org.strongback.Strongback;
+import org.strongback.command.Command;
+//import org.strongback.command.Scheduler;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
+
 public class Robot extends IterativeRobot {
 
-	private int position;
+	Command autonomousCommand;
+	SendableChooser autoChooser;
 	
-    @Override
+	@Override
     public void robotInit() {
-    	position = (int)SmartDashboard.getNumber("Position", 1);
+    	autoChooser = new SendableChooser();
+    	autoChooser.addDefault("Default program", new JustForward());
+    	autoChooser.addDefault("Right start, right switch", new JustForward());
     }
+    
+    public void autonomousInit(){
+        //Start Strongback functions ...
+        Strongback.start();    
+        autonomousCommand = autoChooser.getSelected();
+        Strongback.submit(autonomousCommand);
+    }
+    
 
     @Override
     public void teleopInit() {
-        // Start Strongback functions ...
+        //Start Strongback functions ...
         Strongback.start();
     }
 
