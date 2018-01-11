@@ -16,9 +16,5 @@
 		<nature>edu.wpi.first.wpilib.plugins.core.nature.FRCProjectNature</nature>
 	</natures>
 	<variableList>
-		<variable>
-			<name>Strongback</name>
-			<value>file:/Users/adilettad/strongback/java/eclipse</value>
-		</variable>
 	</variableList>
 </projectDescription>
