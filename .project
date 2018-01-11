@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>rhea-5973</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>edu.wpi.first.wpilib.plugins.core.nature.FRCProjectNature</nature>
+	</natures>
+	<variableList>
+		<variable>
+			<name>Strongback</name>
+			<value>file:/Users/adilettad/strongback/java/eclipse</value>
+		</variable>
+	</variableList>
+</projectDescription>
