@@ -6,8 +6,7 @@
 package org.frc5973.robot;
 
 import org.strongback.Strongback;
-import org.strongback.command.Command;
-//import org.strongback.command.Scheduler;
+import org.strongback.command.Command;]
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.*;
@@ -16,8 +15,10 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
 public class Robot extends IterativeRobot {
 
 	Command autonomousCommand;
+	@SuppressWarnings("rawtypes")
 	SendableChooser autoChooser;
 	
+	@SuppressWarnings("unchecked")
 	@Override
     public void robotInit() {
     	autoChooser = new SendableChooser();
@@ -28,7 +29,7 @@ public class Robot extends IterativeRobot {
     public void autonomousInit(){
         //Start Strongback functions ...
         Strongback.start();    
-        autonomousCommand = autoChooser.getSelected();
+        autonomousCommand = (Command) autoChooser.getSelected();
         Strongback.submit(autonomousCommand);
     }
     
