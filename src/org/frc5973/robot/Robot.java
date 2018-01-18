@@ -20,6 +20,7 @@ public class Robot extends IterativeRobot {
 	
 	@SuppressWarnings("unchecked")
 	@Override
+	//initiaties robot
     public void robotInit() {
     	autoChooser = new SendableChooser();
     	autoChooser.addDefault("Default program", new JustForward());
