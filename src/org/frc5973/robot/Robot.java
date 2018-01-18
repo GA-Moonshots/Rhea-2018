@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
 
 public class Robot extends IterativeRobot {
 
+	//SmartDashboard autonomous mode choice setup
 	Command autonomousCommand;
 	@SuppressWarnings("rawtypes")
 	SendableChooser autoChooser;
@@ -29,7 +30,8 @@ public class Robot extends IterativeRobot {
     
     public void autonomousInit(){
         //Start Strongback functions ...
-        Strongback.start();    
+        Strongback.start(); 
+        //Submits command to Strongback
         autonomousCommand = (Command) autoChooser.getSelected();
         Strongback.submit(autonomousCommand);
     }
