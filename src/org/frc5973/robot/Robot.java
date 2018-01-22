@@ -1,7 +1,7 @@
 /* 
  * Team 5973, Moonshots
  * 2018 - Rhea
- * Software Captain: Sebastian Williams
+ * Software Captain: Sebastian V. Williams
  */
 package org.frc5973.robot;
 
