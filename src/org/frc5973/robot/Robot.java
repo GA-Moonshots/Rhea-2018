@@ -6,7 +6,7 @@
 package org.frc5973.robot;
 
 import org.strongback.Strongback;
-import org.strongback.command.Command;]
+import org.strongback.command.Command;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.*;
