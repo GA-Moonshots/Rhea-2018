@@ -23,7 +23,7 @@ public class Robot extends IterativeRobot {
     public void robotInit() {
     	autoChooser = new SendableChooser();
     	autoChooser.addDefault("Default program", new JustForward());
-    	autoChooser.addDefault("Right start, right switch", new JustForward());
+    	autoChooser.addObject("Right start, right switch", new JustForward());
     }
     
     public void autonomousInit(){
