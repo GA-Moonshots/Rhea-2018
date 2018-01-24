@@ -86,9 +86,8 @@ public class Robot extends IterativeRobot {
 		Motor door = Hardware.Motors.victorSP(DOOR_PORT);
 		
 		//Sets up compressor, whcih fills with air until too fill
-		Compressor c = new Compressor(0);
-		c.setClosedLoopControl(true);
-		c.setClosedLoopControl(false);
+		Compressor c = new Compressor();
+		c.start();
 
 
 		drive = new TankDrive(left, right);
