@@ -35,9 +35,8 @@ public class Robot extends IterativeRobot {
 	private static final int LMOTOR_REAR = 1;
 
 	// Declares the ports for the winch and door
-	private static final int WINCH_PORT = 4;
-	private static final int DOOR_PORT = 5;
-	private static final int WINCH2_PORT = 6;
+	//	private static final int WINCH_PORT = 4;
+	//	private static final int WINCH2_PORT = 6;
 
 	// Declares the TankDrive reference along with the ContinuousRange objects
 	private TankDrive drive;
@@ -62,10 +61,12 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		Strongback.configure().recordNoData().recordNoCommands().recordNoEvents()
-				.useExecutionPeriod(200, TimeUnit.MILLISECONDS).initialize();
+				.useExecutionPeriod(200, TimeUnit.MILLISECONDS);
+		
 		// Sets up the two cameras, one facing forward and once facing backwards
-		CameraServer.getInstance().startAutomaticCapture(0);
-		CameraServer.getInstance().startAutomaticCapture(1);
+		// CameraServer.getInstance().startAutomaticCapture(0);
+		// CameraServer.getInstance().startAutomaticCapture(1);
+		
 		// Set up the robot hardware ...
 		Motor left_front = Hardware.Motors.victorSP(LMOTOR_FRONT).invert(); // left
 																			// rear
@@ -79,11 +80,10 @@ public class Robot extends IterativeRobot {
 		Motor left = Motor.compose(left_front, left_rear);
 		Motor right = Motor.compose(right_front, right_rear);
 
-		Motor winch = Hardware.Motors.victorSP(WINCH_PORT);
-		Motor winch2 = Hardware.Motors.victorSP(WINCH2_PORT);
+		// Motor winch = Hardware.Motors.victorSP(WINCH_PORT);
+		// Motor winch2 = Hardware.Motors.victorSP(WINCH2_PORT);
 
-		Motor winch_compose = Motor.compose(winch, winch2);
-		Motor door = Hardware.Motors.victorSP(DOOR_PORT);
+		// Motor winch_compose = Motor.compose(winch, winch2);
 		
 		//Sets up compressor, whcih fills with air until too fill
 		Compressor c = new Compressor();
@@ -108,16 +108,11 @@ public class Robot extends IterativeRobot {
 		// inverted
 		reactor.onTriggered(joystick.getButton(7), () -> switchControls());
 
-		reactor.onTriggered(joystick.getButton(3), () -> winch_compose.setSpeed(1));
-		reactor.onUntriggered(joystick.getButton(3), () -> winch_compose.stop());
+		// reactor.onTriggered(joystick.getButton(3), () -> winch_compose.setSpeed(1));
+		// reactor.onUntriggered(joystick.getButton(3), () -> winch_compose.stop());
 		// reactor.onTriggered(joystick.getButton(4), () -> winch.setSpeed(-1));
 		// reactor.onUntriggered(joystick.getButton(4), () -> winch.stop());
 
-		reactor.onTriggered(joystick.getButton(12), () -> door.setSpeed(1));
-		reactor.onUntriggered(joystick.getButton(12), () -> door.stop());
-
-		reactor.onTriggered(joystick.getButton(11), () -> door.setSpeed(-1));
-		reactor.onUntriggered(joystick.getButton(11), () -> door.stop());
 		/*
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("Default program", new JustForward());
