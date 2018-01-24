@@ -21,6 +21,7 @@ import org.strongback.hardware.Hardware;
 import org.strongback.util.Values;
 
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
@@ -83,6 +84,12 @@ public class Robot extends IterativeRobot {
 
 		Motor winch_compose = Motor.compose(winch, winch2);
 		Motor door = Hardware.Motors.victorSP(DOOR_PORT);
+		
+		//Sets up compressor, whcih fills with air until too fill
+		Compressor c = new Compressor(0);
+		c.setClosedLoopControl(true);
+		c.setClosedLoopControl(false);
+
 
 		drive = new TankDrive(left, right);
 		// Set up the human input controls for teleoperated mode. We want to use
