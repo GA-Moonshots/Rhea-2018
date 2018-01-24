@@ -5,7 +5,7 @@ import org.junit.Test;
 
 public class TestRobot {
 
-    @Test
+    @org.junit.Test
     public void test() {
         // do something here
     }
