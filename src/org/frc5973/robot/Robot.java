@@ -87,9 +87,7 @@ public class Robot extends IterativeRobot {
 		// Motor winch_compose = Motor.compose(winch, winch2);
 		
 		DoubleSolenoid exDub = new DoubleSolenoid(2,4);
-		exDub.set(DoubleSolenoid.Value.kOff);
-		exDub.set(DoubleSolenoid.Value.kForward);
-		exDub.set(DoubleSolenoid.Value.kReverse);
+
 
 
 
@@ -130,7 +128,6 @@ public class Robot extends IterativeRobot {
 		autonomousCommand = (Command) autoChooser.getSelected();
 		Strongback.submit(autonomousCommand);
 		*/
-		DoubleSolenoid exDub = new DoubleSolenoid(2,4);
 		exDub.set(DoubleSolenoid.Value.kOff);
 		exDub.set(DoubleSolenoid.Value.kForward);
 	}
