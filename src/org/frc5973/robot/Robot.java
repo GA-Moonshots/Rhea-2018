@@ -53,21 +53,23 @@ public class Robot extends IterativeRobot {
 	private String pattern = "###.###";
 	private DecimalFormat myFormat = new DecimalFormat(pattern);
 	private double sen;
+	DoubleSolenoid exDub = new DoubleSolenoid(2,3);
 
 	Command autonomousCommand;
 	@SuppressWarnings("rawtypes")
 	SendableChooser autoChooser;
+	Compressor c = new Compressor(0);
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void robotInit() {
 		Strongback.configure().recordNoData().recordNoCommands().recordNoEvents()
 				.useExecutionPeriod(200, TimeUnit.MILLISECONDS);
-		
 		// Sets up the two cameras, one facing forward and once facing backwards
 		// CameraServer.getInstance().startAutomaticCapture(0);
 		// CameraServer.getInstance().startAutomaticCapture(1);
-		
+		c.start();
+
 		// Set up the robot hardware ...
 		Motor left_front = Hardware.Motors.victorSP(LMOTOR_FRONT).invert(); // left
 																			// rear
@@ -86,7 +88,6 @@ public class Robot extends IterativeRobot {
 
 		// Motor winch_compose = Motor.compose(winch, winch2);
 		
-		DoubleSolenoid exDub = new DoubleSolenoid(2,4);
 
 
 
@@ -109,6 +110,11 @@ public class Robot extends IterativeRobot {
 		// inverted
 		reactor.onTriggered(joystick.getButton(7), () -> switchControls());
 
+		
+		reactor.onTriggered(joystick.getButton(9), () -> exDub.set(DoubleSolenoid.Value.kOff));
+		reactor.onTriggered(joystick.getButton(10), () -> exDub.set(DoubleSolenoid.Value.kForward));
+		reactor.onTriggered(joystick.getButton(11), () -> exDub.set(DoubleSolenoid.Value.kReverse));
+
 		// reactor.onTriggered(joystick.getButton(3), () -> winch_compose.setSpeed(1));
 		// reactor.onUntriggered(joystick.getButton(3), () -> winch_compose.stop());
 		// reactor.onTriggered(joystick.getButton(4), () -> winch.setSpeed(-1));
@@ -128,8 +134,8 @@ public class Robot extends IterativeRobot {
 		autonomousCommand = (Command) autoChooser.getSelected();
 		Strongback.submit(autonomousCommand);
 		*/
-		exDub.set(DoubleSolenoid.Value.kOff);
-		exDub.set(DoubleSolenoid.Value.kForward);
+		//exDub.set(DoubleSolenoid.Value.kOff);
+
 	}
 
 	@Override
@@ -138,6 +144,7 @@ public class Robot extends IterativeRobot {
 		Strongback.disable();
 		// Start Strongback functions ...
 		Strongback.start();
+		c.setClosedLoopControl(true);
 	}
 
 	@Override
@@ -151,6 +158,7 @@ public class Robot extends IterativeRobot {
 		// Tell Strongback that the robot is disabled so it can flush and kill
 		// commands.
 		Strongback.disable();
+		c.setClosedLoopControl(false);
 	}
 	public void switchControls() {
 		driveSpeed = driveSpeed.invert();
