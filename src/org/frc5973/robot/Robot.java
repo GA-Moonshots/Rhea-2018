@@ -19,6 +19,8 @@ import org.strongback.components.ui.FlightStick;
 import org.strongback.drive.TankDrive;
 import org.strongback.hardware.Hardware;
 import org.strongback.util.Values;
+import edu.wpi.first.wpilibj.AnalogGyro;
+
 
 import edu.wpi.first.wpilibj.CameraServer;
 
@@ -28,6 +30,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
 public class Robot extends IterativeRobot {
@@ -38,6 +41,8 @@ public class Robot extends IterativeRobot {
 	private static final int RMOTOR_REAR = 2;
 	private static final int LMOTOR_FRONT = 0;
 	private static final int LMOTOR_REAR = 1;
+	
+	double Kp = 0.03;
 
 	// Declares the TankDrive reference along with the ContinuousRange objects
 	private TankDrive drive;
@@ -50,6 +55,7 @@ public class Robot extends IterativeRobot {
 
 	// Used to limit and format the number of console outputs
 	private int filter = 0;
+	private Gyro gyro;
 	private String pattern = "###.###";
 	private DecimalFormat myFormat = new DecimalFormat(pattern);
 	private double sen;
@@ -120,9 +126,18 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		// Start Strongback functions ...
 	
-		//Strongback.start();
+		Strongback.start();
 		//autonomousCommand = (Command) autoChooser.getSelected();
 		//Strongback.submit(autonomousCommand);
+	}
+
+
+	
+	public void autonomousPeriodic() {
+		gyro = new AnalogGyro(1);
+		double angle = gyro.getAngle();
+        TimedDriveCommand forward = new TimedDriveCommand(drive, .2, -angle*Kp, false, 1, 100);// Gyro on Analog Channel 1
+        forward.execute();
 	}
 
 	@Override
