@@ -126,14 +126,11 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		// Start Strongback functions ...
 	
-<<<<<<< HEAD
 		Strongback.start();
 		//autonomousCommand = (Command) autoChooser.getSelected();
-=======
 		//Strongback.start();
 		autonomousCommand = (Command) autoChooser.getSelected();
 		autonomousCommand.start();
->>>>>>> Catherine's-Branch
 		//Strongback.submit(autonomousCommand);
 	}
 
