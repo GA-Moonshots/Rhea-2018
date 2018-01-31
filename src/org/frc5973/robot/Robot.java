@@ -21,9 +21,13 @@ import org.strongback.hardware.Hardware;
 import org.strongback.util.Values;
 
 import edu.wpi.first.wpilibj.CameraServer;
+
+// NEW STUFF THIS YEAR
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Jaguar;
+import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
 public class Robot extends IterativeRobot {
@@ -34,10 +38,6 @@ public class Robot extends IterativeRobot {
 	private static final int RMOTOR_REAR = 2;
 	private static final int LMOTOR_FRONT = 0;
 	private static final int LMOTOR_REAR = 1;
-
-	// Declares the ports for the winch and door
-	//	private static final int WINCH_PORT = 4;
-	//	private static final int WINCH2_PORT = 6;
 
 	// Declares the TankDrive reference along with the ContinuousRange objects
 	private TankDrive drive;
@@ -53,44 +53,39 @@ public class Robot extends IterativeRobot {
 	private String pattern = "###.###";
 	private DecimalFormat myFormat = new DecimalFormat(pattern);
 	private double sen;
+	
+	// PNEUMATICS
 	DoubleSolenoid exDub = new DoubleSolenoid(2,3);
+	Compressor c = new Compressor(0);
 
+	// AUTONOMOUS MODE SELECTOR
 	Command autonomousCommand;
 	@SuppressWarnings("rawtypes")
 	SendableChooser autoChooser;
-	Compressor c = new Compressor(0);
 
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void robotInit() {
-		Strongback.configure().recordNoData().recordNoCommands().recordNoEvents()
+	
+		 Strongback.configure().recordNoData().recordNoCommands().recordNoEvents()
 				.useExecutionPeriod(200, TimeUnit.MILLISECONDS);
 		// Sets up the two cameras, one facing forward and once facing backwards
 		// CameraServer.getInstance().startAutomaticCapture(0);
 		// CameraServer.getInstance().startAutomaticCapture(1);
+		
+		// ENABLE COMPRESSOR
 		c.start();
 
 		// Set up the robot hardware ...
-		Motor left_front = Hardware.Motors.victorSP(LMOTOR_FRONT).invert(); // left
-																			// rear
-		Motor left_rear = Hardware.Motors.victorSP(LMOTOR_REAR).invert(); // left
-																			// front
+		Motor left_front = Hardware.Motors.victorSP(LMOTOR_FRONT).invert(); // left rear
+		Motor left_rear = Hardware.Motors.victorSP(LMOTOR_REAR).invert(); // left front
 		// DoubleToDoubleFunction SPEED_LIMITER = Values.limiter(-0.1, 0.1);
-		Motor right_front = Hardware.Motors.victorSP(RMOTOR_FRONT); // right
-																	// rear
+		Motor right_front = Hardware.Motors.victorSP(RMOTOR_FRONT); // right rear
 		Motor right_rear = Hardware.Motors.victorSP(RMOTOR_REAR); // right front
 
 		Motor left = Motor.compose(left_front, left_rear);
 		Motor right = Motor.compose(right_front, right_rear);
-
-		// Motor winch = Hardware.Motors.victorSP(WINCH_PORT);
-		// Motor winch2 = Hardware.Motors.victorSP(WINCH2_PORT);
-
-		// Motor winch_compose = Motor.compose(winch, winch2);
-		
-
-
-
 
 		drive = new TankDrive(left, right);
 		// Set up the human input controls for teleoperated mode. We want to use
@@ -110,32 +105,24 @@ public class Robot extends IterativeRobot {
 		// inverted
 		reactor.onTriggered(joystick.getButton(7), () -> switchControls());
 
-		
+		// PNEUMATIC CONTROLS
 		reactor.onTriggered(joystick.getButton(9), () -> exDub.set(DoubleSolenoid.Value.kOff));
 		reactor.onTriggered(joystick.getButton(10), () -> exDub.set(DoubleSolenoid.Value.kForward));
 		reactor.onTriggered(joystick.getButton(11), () -> exDub.set(DoubleSolenoid.Value.kReverse));
 
-		// reactor.onTriggered(joystick.getButton(3), () -> winch_compose.setSpeed(1));
-		// reactor.onUntriggered(joystick.getButton(3), () -> winch_compose.stop());
-		// reactor.onTriggered(joystick.getButton(4), () -> winch.setSpeed(-1));
-		// reactor.onUntriggered(joystick.getButton(4), () -> winch.stop());
 
-		/*
 		autoChooser = new SendableChooser();
-		autoChooser.addDefault("Default program", new JustForward());
-		autoChooser.addObject("Right start, right switch", new JustForward());
-		*/
+//		autoChooser.addDefault("Default program", new JustForward());
+//		autoChooser.addObject("Right start, right switch", new JustForward());
+		
 	}
 
 	public void autonomousInit() {
 		// Start Strongback functions ...
-		/*
-		Strongback.start();
-		autonomousCommand = (Command) autoChooser.getSelected();
-		Strongback.submit(autonomousCommand);
-		*/
-		//exDub.set(DoubleSolenoid.Value.kOff);
-
+	
+		//Strongback.start();
+		//autonomousCommand = (Command) autoChooser.getSelected();
+		//Strongback.submit(autonomousCommand);
 	}
 
 	@Override
@@ -144,7 +131,7 @@ public class Robot extends IterativeRobot {
 		Strongback.disable();
 		// Start Strongback functions ...
 		Strongback.start();
-		c.setClosedLoopControl(true);
+		//c.setClosedLoopControl(true);
 	}
 
 	@Override
@@ -158,7 +145,7 @@ public class Robot extends IterativeRobot {
 		// Tell Strongback that the robot is disabled so it can flush and kill
 		// commands.
 		Strongback.disable();
-		c.setClosedLoopControl(false);
+		//c.setClosedLoopControl(false);
 	}
 	public void switchControls() {
 		driveSpeed = driveSpeed.invert();
