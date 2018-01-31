@@ -130,7 +130,7 @@ public class Robot extends IterativeRobot {
 		//autonomousCommand = (Command) autoChooser.getSelected();
 		//Strongback.start();
 		autonomousCommand = (Command) autoChooser.getSelected();
-		autonomousCommand.start();
+		//autonomousCommand.start();
 		//Strongback.submit(autonomousCommand);
 	}
 
