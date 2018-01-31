@@ -118,9 +118,9 @@ public class Robot extends IterativeRobot {
 
 
 		autoChooser = new SendableChooser();
-//		autoChooser.addDefault("Default program", new JustForward());
-//		autoChooser.addObject("Right start, right switch", new JustForward());
-		
+		autoChooser.addDefault("Default program", new JustForward());
+		autoChooser.addObject("Right start, right switch", new JustForward());
+		SmartDashboard.putData("Autonomous Mode Selector", autoChooser);
 	}
 
 	public void autonomousInit() {
@@ -131,6 +131,8 @@ public class Robot extends IterativeRobot {
 		//autonomousCommand = (Command) autoChooser.getSelected();
 =======
 		//Strongback.start();
+		autonomousCommand = (Command) autoChooser.getSelected();
+		autonomousCommand.start();
 >>>>>>> Catherine's-Branch
 		//Strongback.submit(autonomousCommand);
 	}
