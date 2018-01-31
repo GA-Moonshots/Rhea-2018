@@ -90,7 +90,8 @@ public class Robot extends IterativeRobot {
 		Motor left_rear = Hardware.Motors.victorSP(LMOTOR_REAR).invert(); // left front
 		// DoubleToDoubleFunction SPEED_LIMITER = Values.limiter(-0.1, 0.1);
 		Motor right_front = Hardware.Motors.victorSP(RMOTOR_FRONT); // right rear
-		Motor right_rear = Hardware.Motors.victorSP(RMOTOR_REAR); // right front
+		Motor right_rear = Hardware.Motors.victorSP(RMOTOR_REAR);
+		gyro = new ADXRS450_Gyro();// right front
 
 		Motor left = Motor.compose(left_front, left_rear);
 		Motor right = Motor.compose(right_front, right_rear);
@@ -139,9 +140,8 @@ public class Robot extends IterativeRobot {
 
 	
 	public void autonomousPeriodic() {
-		gyro = new ADXRS450_Gyro();
 		double angle = gyro.getAngle();
-        TimedDriveCommand forward = new TimedDriveCommand(drive, .2, -angle*Kp, false, 1, 1000);// Gyro on Analog Channel 1
+        TimedDriveCommand forward = new TimedDriveCommand(drive, .2, angle*Kp, false, 1, 500); // Gyro on Analog Channel 1
         forward.execute();
 	}
 
