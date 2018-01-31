@@ -141,7 +141,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		gyro = new ADXRS450_Gyro();
 		double angle = gyro.getAngle();
-        TimedDriveCommand forward = new TimedDriveCommand(drive, .2, -angle*Kp, false, 1, 100);// Gyro on Analog Channel 1
+        TimedDriveCommand forward = new TimedDriveCommand(drive, .2, -angle*Kp, false, 1, 1000);// Gyro on Analog Channel 1
         forward.execute();
 	}
 
