@@ -45,6 +45,8 @@ public class Robot extends IterativeRobot {
 	private static final int LMOTOR_REAR = 1;
 	
 	double Kp = 0.03;
+	boolean done = false;
+	int counter = 0;
 
 	// Declares the TankDrive reference along with the ContinuousRange objects
 	private TankDrive drive;
@@ -128,8 +130,10 @@ public class Robot extends IterativeRobot {
 
 	public void autonomousInit() {
 		// Start Strongback functions ...
-	
 		Strongback.start();
+		done = false;
+
+		gyro.reset();
 		//autonomousCommand = (Command) autoChooser.getSelected();
 		//Strongback.start();
 		autonomousCommand = (Command) autoChooser.getSelected();
@@ -141,10 +145,17 @@ public class Robot extends IterativeRobot {
 	
 	public void autonomousPeriodic() {
 		double angle = gyro.getAngle();
-        TimedDriveCommand forward = new TimedDriveCommand(drive, .2, angle*Kp, false, 1, 500); // Gyro on Analog Channel 1
-        forward.execute();
+        //TimedDriveCommand forward = new TimedDriveCommand(drive, .5, -angle*Kp, false, 1, 50); // Gyro on Analog Channel 1
+        if(angle <= 87){
+        	TimedDriveCommand turn = new TimedDriveCommand(drive, 0, .2, false, 1, 50); // Gyro on Analog Channel 1
+        	turn.execute();
+        }
+        if(angle > 93){
+        	TimedDriveCommand turn_other_way = new TimedDriveCommand(drive, 0, -.1, false, 1, 50); // Gyro on Analog Channel 1
+        	turn_other_way.execute();
+        
 	}
-
+	}
 	@Override
 	public void teleopInit() {
 		// Kill anything running if it is ...
