@@ -19,6 +19,8 @@ import org.strongback.components.ui.FlightStick;
 import org.strongback.drive.TankDrive;
 import org.strongback.hardware.Hardware;
 import org.strongback.util.Values;
+
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogGyro;
 
 
@@ -55,7 +57,7 @@ public class Robot extends IterativeRobot {
 
 	// Used to limit and format the number of console outputs
 	private int filter = 0;
-	private Gyro gyro;
+	private ADXRS450_Gyro gyro;
 	private String pattern = "###.###";
 	private DecimalFormat myFormat = new DecimalFormat(pattern);
 	private double sen;
@@ -137,7 +139,7 @@ public class Robot extends IterativeRobot {
 
 	
 	public void autonomousPeriodic() {
-		gyro = new AnalogGyro(1);
+		gyro = new ADXRS450_Gyro();
 		double angle = gyro.getAngle();
         TimedDriveCommand forward = new TimedDriveCommand(drive, .2, -angle*Kp, false, 1, 100);// Gyro on Analog Channel 1
         forward.execute();
