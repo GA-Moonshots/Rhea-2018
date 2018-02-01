@@ -23,7 +23,6 @@ import org.strongback.util.Values;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogGyro;
 
-
 import edu.wpi.first.wpilibj.CameraServer;
 
 // NEW STUFF THIS YEAR
@@ -43,11 +42,12 @@ public class Robot extends IterativeRobot {
 	private static final int RMOTOR_REAR = 2;
 	private static final int LMOTOR_FRONT = 0;
 	private static final int LMOTOR_REAR = 1;
-	
+
 	// ACCURATE TURN TOOLS
 	double Kp = 0.03;
 	boolean done = false;
 	int counter = 0;
+	int counter2 = 0;
 	private ADXRS450_Gyro gyro;
 
 	// Declares the TankDrive reference along with the ContinuousRange objects
@@ -64,27 +64,26 @@ public class Robot extends IterativeRobot {
 	private String pattern = "###.###";
 	private DecimalFormat myFormat = new DecimalFormat(pattern);
 	private double sen;
-	
+
 	// PNEUMATICS
-	DoubleSolenoid exDub = new DoubleSolenoid(2,3);
+	DoubleSolenoid exDub = new DoubleSolenoid(2, 3);
 	Compressor c = new Compressor(0);
 
 	// AUTONOMOUS MODE SELECTOR
 	Command autonomousCommand;
 	@SuppressWarnings("rawtypes")
 	SendableChooser autoChooser;
-	
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void robotInit() {
-	
-		 Strongback.configure().recordNoData().recordNoCommands().recordNoEvents()
-				.useExecutionPeriod(200, TimeUnit.MILLISECONDS);
+
+		Strongback.configure().recordNoData().recordNoCommands().recordNoEvents().useExecutionPeriod(200,
+				TimeUnit.MILLISECONDS);
 		// Sets up the two cameras, one facing forward and once facing backwards
 		// CameraServer.getInstance().startAutomaticCapture(0);
 		// CameraServer.getInstance().startAutomaticCapture(1);
-		
+
 		// ENABLE COMPRESSOR
 		c.start();
 
@@ -122,7 +121,6 @@ public class Robot extends IterativeRobot {
 		reactor.onTriggered(joystick.getButton(10), () -> exDub.set(DoubleSolenoid.Value.kForward));
 		reactor.onTriggered(joystick.getButton(11), () -> exDub.set(DoubleSolenoid.Value.kReverse));
 
-
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("Default program", new JustForward());
 		autoChooser.addObject("Right start, right switch", new JustForward());
@@ -133,36 +131,47 @@ public class Robot extends IterativeRobot {
 		// Start Strongback functions ...
 		Strongback.start();
 		done = false;
-		
+
 		gyro.reset();
-		//autonomousCommand = (Command) autoChooser.getSelected();
-		//Strongback.start();
+		// autonomousCommand = (Command) autoChooser.getSelected();
+		// Strongback.start();
 		autonomousCommand = (Command) autoChooser.getSelected();
-		//autonomousCommand.start();
-		//Strongback.submit(autonomousCommand);
+		// autonomousCommand.start();
+		// Strongback.submit(autonomousCommand);
 	}
 
 	public void autonomousPeriodic() {
 		double angle = gyro.getAngle();
-        //TimedDriveCommand forward = new TimedDriveCommand(drive, .5, -angle*Kp, false, 1, 50); // Gyro on Analog Channel 1
-        if(angle <= 87){
-        	TimedDriveCommand turn = new TimedDriveCommand(drive, 0, .2, false, 1, 50); // Gyro on Analog Channel 1
-        	turn.execute();
-        }
-        if(angle > 93){
-        	TimedDriveCommand turn_other_way = new TimedDriveCommand(drive, 0, -.1, false, 1, 50); // Gyro on Analog Channel 1
-        	turn_other_way.execute();
-        
+		if (counter < 100) {
+			TimedDriveCommand forward = new TimedDriveCommand(drive, .5, -angle * Kp, false, 1, 50);
+			forward.execute();
+			counter++;
+		} else {
+
+			if (angle <= 87) {
+				TimedDriveCommand turn = new TimedDriveCommand(drive, 0, .2, false, 1, 50);
+				turn.execute();
+			}
+			if (angle > 93) {
+				TimedDriveCommand turn_other_way = new TimedDriveCommand(drive, 0, -.1, false, 1, 50); // Channel 1
+				turn_other_way.execute();
+
+			}
+		}
+		if (counter2 < 100) {
+			TimedDriveCommand forward2 = new TimedDriveCommand(drive, .5, -angle * Kp, false, 1, 50);
+			forward2.execute();
+			counter2++;
+		}
 	}
-	}
-	
+
 	@Override
 	public void teleopInit() {
 		// Kill anything running if it is ...
 		Strongback.disable();
 		// Start Strongback functions ...
 		Strongback.start();
-		//c.setClosedLoopControl(true);
+		// c.setClosedLoopControl(true);
 	}
 
 	@Override
@@ -176,9 +185,9 @@ public class Robot extends IterativeRobot {
 		// Tell Strongback that the robot is disabled so it can flush and kill
 		// commands.
 		Strongback.disable();
-		//c.setClosedLoopControl(false);
+		// c.setClosedLoopControl(false);
 	}
-	
+
 	public void switchControls() {
 		driveSpeed = driveSpeed.invert();
 		// turnSpeed = turnSpeed.invert();
