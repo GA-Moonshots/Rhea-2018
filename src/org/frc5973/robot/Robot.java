@@ -133,36 +133,18 @@ public class Robot extends IterativeRobot {
 		done = false;
 
 		gyro.reset();
+		
 		// autonomousCommand = (Command) autoChooser.getSelected();
 		// Strongback.start();
 		autonomousCommand = (Command) autoChooser.getSelected();
-		// autonomousCommand.start();
+		TimedDriveCommand forward = new TimedDriveCommand(drive, .2, 0, false, 200, 200);
+		forward.execute();
+		AngularTurnCommand turnboi = new AngularTurnCommand(drive, gyro, .3,false, 180);
+		turnboi.execute();
 		// Strongback.submit(autonomousCommand);
 	}
 
 	public void autonomousPeriodic() {
-		double angle = gyro.getAngle();
-		if (counter < 100) {
-			TimedDriveCommand forward = new TimedDriveCommand(drive, .5, -angle * Kp, false, 1, 50);
-			forward.execute();
-			counter++;
-		} else {
-
-			if (angle <= 87) {
-				TimedDriveCommand turn = new TimedDriveCommand(drive, 0, .2, false, 1, 50);
-				turn.execute();
-			}
-			if (angle > 93) {
-				TimedDriveCommand turn_other_way = new TimedDriveCommand(drive, 0, -.1, false, 1, 50); // Channel 1
-				turn_other_way.execute();
-
-			}
-		}
-		if (counter2 < 100) {
-			TimedDriveCommand forward2 = new TimedDriveCommand(drive, .5, -angle * Kp, false, 1, 50);
-			forward2.execute();
-			counter2++;
-		}
 	}
 
 	@Override

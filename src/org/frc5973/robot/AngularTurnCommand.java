@@ -25,14 +25,15 @@ import edu.wpi.first.wpilibj.AnalogGyro;
  * The command that drives the robot at a constant forward and turn speed for a
  * specific duration.
  */
-public class TurnCommand extends Command {
+public class AngularTurnCommand extends Command {
 
 	private final TankDrive drive;
-	private final double driveSpeed;
 	private final double turnSpeed;
 	private final boolean squareInputs;
-	private long time_move;
 	private ADXRS450_Gyro gyro;
+	private double currentAngle;
+	private double angle;
+
 	/**
 	 * Create a new autonomous command.
 	 * 
@@ -47,30 +48,41 @@ public class TurnCommand extends Command {
 	 * @param duration
 	 *            the duration of this command; should be positive
 	 */
-	public TurnCommand(TankDrive drive, ADXRS450_Gyro gyro, double turnSpeed, boolean squareInputs,
-			double duration, long time_move) {
-		super(duration, drive);
+	public AngularTurnCommand(TankDrive drive, ADXRS450_Gyro gyro, double turnSpeed, boolean squareInputs,
+			double angle) {
+		super(drive);
 		this.drive = drive;
 		this.gyro = gyro;
-		this.driveSpeed = 0;
 		this.turnSpeed = turnSpeed;
 		this.squareInputs = squareInputs;
-		this.time_move = time_move;
+		this.angle = angle;
 	}
 
 	@Override
 	public boolean execute() {
-
-		drive.arcade(driveSpeed, turnSpeed, squareInputs);
-		try {
-			Thread.sleep(this.time_move);
-		} catch (InterruptedException e) {
-			System.out.println("Error here");
-			e.printStackTrace();
+		//while (gyro.getAngle() > (angle + 3) || gyro.getAngle() < (angle - 3)) {
+		while (gyro.getAngle() < (angle -3)){
+			drive.arcade(0, turnSpeed, squareInputs);
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				System.out.println("Error here");
+				e.printStackTrace();
+			}
+			drive.stop();
 		}
-		drive.stop();
-		return false; // not complete; it will time out automatically
-		
+		while (gyro.getAngle() > (angle + 3)){
+			drive.arcade(0, -.1, squareInputs);
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				System.out.println("Error here");
+				e.printStackTrace();
+			}
+			drive.stop();
+		}
+		return true;
+
 	}
 
 	@Override
