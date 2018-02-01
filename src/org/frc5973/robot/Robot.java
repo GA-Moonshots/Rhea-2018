@@ -44,9 +44,11 @@ public class Robot extends IterativeRobot {
 	private static final int LMOTOR_FRONT = 0;
 	private static final int LMOTOR_REAR = 1;
 	
+	// ACCURATE TURN TOOLS
 	double Kp = 0.03;
 	boolean done = false;
 	int counter = 0;
+	private ADXRS450_Gyro gyro;
 
 	// Declares the TankDrive reference along with the ContinuousRange objects
 	private TankDrive drive;
@@ -59,7 +61,6 @@ public class Robot extends IterativeRobot {
 
 	// Used to limit and format the number of console outputs
 	private int filter = 0;
-	private ADXRS450_Gyro gyro;
 	private String pattern = "###.###";
 	private DecimalFormat myFormat = new DecimalFormat(pattern);
 	private double sen;
@@ -72,7 +73,7 @@ public class Robot extends IterativeRobot {
 	Command autonomousCommand;
 	@SuppressWarnings("rawtypes")
 	SendableChooser autoChooser;
-
+	
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -132,7 +133,7 @@ public class Robot extends IterativeRobot {
 		// Start Strongback functions ...
 		Strongback.start();
 		done = false;
-
+		
 		gyro.reset();
 		//autonomousCommand = (Command) autoChooser.getSelected();
 		//Strongback.start();
@@ -141,8 +142,6 @@ public class Robot extends IterativeRobot {
 		//Strongback.submit(autonomousCommand);
 	}
 
-
-	
 	public void autonomousPeriodic() {
 		double angle = gyro.getAngle();
         //TimedDriveCommand forward = new TimedDriveCommand(drive, .5, -angle*Kp, false, 1, 50); // Gyro on Analog Channel 1
@@ -156,6 +155,7 @@ public class Robot extends IterativeRobot {
         
 	}
 	}
+	
 	@Override
 	public void teleopInit() {
 		// Kill anything running if it is ...
@@ -178,6 +178,7 @@ public class Robot extends IterativeRobot {
 		Strongback.disable();
 		//c.setClosedLoopControl(false);
 	}
+	
 	public void switchControls() {
 		driveSpeed = driveSpeed.invert();
 		// turnSpeed = turnSpeed.invert();
