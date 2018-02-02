@@ -58,6 +58,7 @@ public class TimedDriveCommand extends Command {
 		this.totalChecks = 20 * time_move;
 		this.currentCheck = 0;
 		this.gyro = gyro;
+		this.gyro.reset();
 	}
 
 	@Override
