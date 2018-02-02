@@ -18,6 +18,8 @@ package org.frc5973.robot;
 import org.strongback.command.Command;
 import org.strongback.drive.TankDrive;
 
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+
 /**
  * The command that drives the robot at a constant forward and turn speed for a
  * specific duration.
@@ -29,6 +31,10 @@ public class TimedDriveCommand extends Command {
 	private final double turnSpeed;
 	private final boolean squareInputs;
 	private long time_move;
+	private long totalChecks;
+	private long currentCheck;
+	private ADXRS450_Gyro gyro;
+
 	/**
 	 * Create a new autonomous command.
 	 * 
@@ -43,28 +49,31 @@ public class TimedDriveCommand extends Command {
 	 * @param duration
 	 *            the duration of this command; should be positive
 	 */
-	public TimedDriveCommand(TankDrive drive, double driveSpeed, double turnSpeed, boolean squareInputs,
-			double duration, long time_move) {
-		super(duration, drive);
+	public TimedDriveCommand(TankDrive drive, ADXRS450_Gyro gyro,double driveSpeed, double turnSpeed, boolean squareInputs,
+			long time_move) {
+		super(drive);
 		this.drive = drive;
 		this.driveSpeed = driveSpeed;
 		this.turnSpeed = turnSpeed;
 		this.squareInputs = squareInputs;
 		this.time_move = time_move;
+		this.totalChecks = 20 * time_move;
+		this.currentCheck = 0;
 	}
 
 	@Override
 	public boolean execute() {
-
-		drive.arcade(driveSpeed, turnSpeed, squareInputs);
-		try {
-			Thread.sleep(this.time_move);
-		} catch (InterruptedException e) {
-			System.out.println("Error here");
-			e.printStackTrace();
+		while (currentCheck < totalChecks) {
+			drive.arcade(driveSpeed, gyro, squareInputs);
+			try {
+				Thread.sleep(this.time_move);
+			} catch (InterruptedException e) {
+				System.out.println("Error here");
+				e.printStackTrace();
+			}
+			drive.stop();
 		}
-		drive.stop();
-		return false; // not complete; it will time out automatically
+		return true;
 	}
 
 	@Override
