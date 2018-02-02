@@ -123,7 +123,14 @@ public class Robot extends IterativeRobot {
 
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("Default program", new JustForward());
-		autoChooser.addObject("Right start, right switch", new JustForward());
+		autoChooser.addObject("1", new JustForward());
+		autoChooser.addObject("2", new JustForward());
+		autoChooser.addObject("3", new JustForward());
+		autoChooser.addObject("4", new JustForward());
+		autoChooser.addObject("5", new JustForward());
+		autoChooser.addObject("6", new JustForward());
+		autoChooser.addObject("7", new JustForward());
+		autoChooser.addObject("8", new JustForward());
 		SmartDashboard.putData("Autonomous Mode Selector", autoChooser);
 	}
 
