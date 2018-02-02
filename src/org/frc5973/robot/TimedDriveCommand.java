@@ -28,7 +28,6 @@ public class TimedDriveCommand extends Command {
 
 	private final TankDrive drive;
 	private final double driveSpeed;
-	private final double turnSpeed;
 	private final boolean squareInputs;
 	private long time_move;
 	private long totalChecks;
@@ -49,29 +48,30 @@ public class TimedDriveCommand extends Command {
 	 * @param duration
 	 *            the duration of this command; should be positive
 	 */
-	public TimedDriveCommand(TankDrive drive, ADXRS450_Gyro gyro,double driveSpeed, double turnSpeed, boolean squareInputs,
+	public TimedDriveCommand(TankDrive drive, ADXRS450_Gyro gyro, double driveSpeed, boolean squareInputs,
 			long time_move) {
 		super(drive);
 		this.drive = drive;
 		this.driveSpeed = driveSpeed;
-		this.turnSpeed = turnSpeed;
 		this.squareInputs = squareInputs;
 		this.time_move = time_move;
 		this.totalChecks = 20 * time_move;
 		this.currentCheck = 0;
+		this.gyro = gyro;
 	}
 
 	@Override
 	public boolean execute() {
 		while (currentCheck < totalChecks) {
-			drive.arcade(driveSpeed, gyro, squareInputs);
+			drive.arcade(driveSpeed, -gyro.getAngle()*.3, squareInputs);
 			try {
-				Thread.sleep(this.time_move);
+				Thread.sleep(50);
 			} catch (InterruptedException e) {
 				System.out.println("Error here");
 				e.printStackTrace();
 			}
 			drive.stop();
+			currentCheck++;	
 		}
 		return true;
 	}
