@@ -71,6 +71,13 @@ public class AngularTurnCommand extends Command {
 			}
 			drive.stop();
 		}
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		while (gyro.getAngle() > (angle + 3)){
 			drive.arcade(0, -.1, squareInputs);
 			try {

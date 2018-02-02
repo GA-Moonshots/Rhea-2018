@@ -55,7 +55,7 @@ public class TimedDriveCommand extends Command {
 		this.driveSpeed = driveSpeed;
 		this.squareInputs = squareInputs;
 		this.time_move = time_move;
-		this.totalChecks = 20 * time_move;
+		this.totalChecks = 20 * time_move/1000;
 		this.currentCheck = 0;
 		this.gyro = gyro;
 		this.gyro.reset();
@@ -64,7 +64,7 @@ public class TimedDriveCommand extends Command {
 	@Override
 	public boolean execute() {
 		while (currentCheck < totalChecks) {
-			drive.arcade(driveSpeed, -gyro.getAngle()*.3, squareInputs);
+			drive.arcade(driveSpeed, -gyro.getAngle()*.03, squareInputs);
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException e) {
