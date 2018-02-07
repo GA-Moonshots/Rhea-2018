@@ -60,34 +60,36 @@ public class AngularTurnCommand extends Command {
 
 	@Override
 	public boolean execute() {
-		//while (gyro.getAngle() > (angle + 3) || gyro.getAngle() < (angle - 3)) {
-		while (gyro.getAngle() < (angle -3)){
-			drive.arcade(0, turnSpeed, squareInputs);
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				System.out.println("Error here");
-				e.printStackTrace();
+		/*
+		 * A loop that goes until the gyro reads an angle that 
+		 * is +/- 3 of the desired angle
+		 */
+		while ((gyro.getAngle() < (angle - 3)) || (gyro.getAngle() > (angle + 3))) {
+			//checks to see whether should under correct
+			if (gyro.getAngle() < (angle - 3)) {
+				drive.arcade(0, turnSpeed, squareInputs);
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					System.out.println("Error here");
+					e.printStackTrace();
+				}
+				drive.stop();
 			}
-			drive.stop();
-		}
-		try {
-			Thread.sleep(200);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		while (gyro.getAngle() > (angle + 3)){
-			drive.arcade(0, -.1, squareInputs);
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				System.out.println("Error here");
-				e.printStackTrace();
+			
+			//checks to see whether should over correct
+			if (gyro.getAngle() > (angle + 3)) {
+				drive.arcade(0, turnSpeed, squareInputs);
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					System.out.println("Error here");
+					e.printStackTrace();
+				}
+				drive.stop();
 			}
-			drive.stop();
 		}
+
 		return true;
 
 	}

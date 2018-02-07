@@ -142,11 +142,9 @@ public class Robot extends IterativeRobot {
 		gyro.reset();
 		
 		// autonomousCommand = (Command) autoChooser.getSelected();
-		// Strongback.start();
 		autonomousCommand = (Command) autoChooser.getSelected();
-		//TimedDriveCommand forward = new TimedDriveCommand(drive, gyro, .2, false, 5000);
-		//forward.execute();
-		AngularTurnCommand turnboi = new AngularTurnCommand(drive, gyro, .7,false, 1800);
+
+		AngularTurnCommand turnboi = new AngularTurnCommand(drive, gyro, .2, false, 180);
 		turnboi.execute();
 		// Strongback.submit(autonomousCommand);
 	}
