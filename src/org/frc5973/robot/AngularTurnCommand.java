@@ -20,6 +20,7 @@ import org.strongback.drive.TankDrive;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.Sendable;
 
 /**
  * The command that drives the robot at a constant forward and turn speed for a
@@ -64,9 +65,10 @@ public class AngularTurnCommand extends Command {
 		 * A loop that goes until the gyro reads an angle that 
 		 * is +/- 3 of the desired angle
 		 */
-		while ((gyro.getAngle() < (angle - 3)) || (gyro.getAngle() > (angle + 3))) {
+		currentAngle = gyro.getAngle();
+		while ((currentAngle < (angle - 1)) || (currentAngle > (angle + 1))) {
 			//checks to see whether should under correct
-			if (gyro.getAngle() < (angle - 3)) {
+			if (currentAngle < (angle)) {
 				drive.arcade(0, turnSpeed, squareInputs);
 				try {
 					Thread.sleep(50);
@@ -75,11 +77,12 @@ public class AngularTurnCommand extends Command {
 					e.printStackTrace();
 				}
 				drive.stop();
+				currentAngle = gyro.getAngle();
 			}
 			
 			//checks to see whether should over correct
-			if (gyro.getAngle() > (angle + 3)) {
-				drive.arcade(0, turnSpeed, squareInputs);
+			if (currentAngle > (angle)) {
+				drive.arcade(0, -.1, squareInputs);
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e) {
@@ -87,6 +90,7 @@ public class AngularTurnCommand extends Command {
 					e.printStackTrace();
 				}
 				drive.stop();
+				currentAngle = gyro.getAngle();
 			}
 		}
 

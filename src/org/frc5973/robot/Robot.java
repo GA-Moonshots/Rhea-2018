@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Jaguar;
+import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.*;
@@ -77,7 +78,6 @@ public class Robot extends IterativeRobot {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void robotInit() {
-
 		Strongback.configure().recordNoData().recordNoCommands().recordNoEvents().useExecutionPeriod(200,
 				TimeUnit.MILLISECONDS);
 		// Sets up the two cameras, one facing forward and once facing backwards
@@ -121,9 +121,11 @@ public class Robot extends IterativeRobot {
 		reactor.onTriggered(joystick.getButton(10), () -> exDub.set(DoubleSolenoid.Value.kForward));
 		reactor.onTriggered(joystick.getButton(11), () -> exDub.set(DoubleSolenoid.Value.kReverse));
 
+		AngularTurnCommand turn = new AngularTurnCommand(drive, gyro, .2, false, 180);
 		autoChooser = new SendableChooser();
-		autoChooser.addDefault("Default program", new JustForward());
-		autoChooser.addObject("1", new JustForward());
+		/**
+		 * autoChooser.addDefault("Default program", new JustForward());
+		 * autoChooser.addObject("1", new JustForward());
 		autoChooser.addObject("2", new JustForward());
 		autoChooser.addObject("3", new JustForward());
 		autoChooser.addObject("4", new JustForward());
@@ -131,6 +133,8 @@ public class Robot extends IterativeRobot {
 		autoChooser.addObject("6", new JustForward());
 		autoChooser.addObject("7", new JustForward());
 		autoChooser.addObject("8", new JustForward());
+		**/
+		autoChooser.addObject("1", turn);
 		SmartDashboard.putData("Autonomous Mode Selector", autoChooser);
 	}
 
