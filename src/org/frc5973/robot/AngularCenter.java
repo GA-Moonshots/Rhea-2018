@@ -26,14 +26,12 @@ import edu.wpi.first.wpilibj.Sendable;
  * The command that drives the robot at a constant forward and turn speed for a
  * specific duration.
  */
-public class AngularTurnCommand extends Command {
+public class AngularCenter extends Command {
 
 	private final TankDrive drive;
-	private final double turnSpeed;
 	private final boolean squareInputs;
 	private ADXRS450_Gyro gyro;
 	private double currentAngle;
-	private double angle;
 
 	/**
 	 * Create a new autonomous command.
@@ -49,14 +47,11 @@ public class AngularTurnCommand extends Command {
 	 * @param duration
 	 *            the duration of this command; should be positive
 	 */
-	public AngularTurnCommand(TankDrive drive, ADXRS450_Gyro gyro, double turnSpeed, boolean squareInputs,
-			double angle) {
+	public AngularCenter(TankDrive drive, ADXRS450_Gyro gyro, boolean squareInputs) {
 		super(drive);
 		this.drive = drive;
 		this.gyro = gyro;
-		this.turnSpeed = turnSpeed;
 		this.squareInputs = squareInputs;
-		this.angle = angle;
 	}
 
 	@Override
@@ -67,10 +62,10 @@ public class AngularTurnCommand extends Command {
 		 */
 		System.out.print("startAng");
 		currentAngle = gyro.getAngle();
-		while ((currentAngle < (angle - 1)) || (currentAngle > (angle + 1))) {
+		while ((currentAngle < (-.25)) || (currentAngle > (0))) {
 			//checks to see whether should under correct
-			if (currentAngle < (angle)) {
-				drive.arcade(0, turnSpeed, squareInputs);
+			if (currentAngle < (0)) {
+				drive.arcade(0, .1, squareInputs);
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e) {
@@ -84,7 +79,7 @@ public class AngularTurnCommand extends Command {
 			}
 			
 			//checks to see whether should over correct
-			if (currentAngle > (angle)) {
+			if (currentAngle > (.25)) {
 				drive.arcade(0, -.1, squareInputs);
 				try {
 					Thread.sleep(50);

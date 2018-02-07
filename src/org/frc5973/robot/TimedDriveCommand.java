@@ -58,11 +58,11 @@ public class TimedDriveCommand extends Command {
 		this.totalChecks = 20 * time_move/1000;
 		this.currentCheck = 0;
 		this.gyro = gyro;
-		this.gyro.reset();
 	}
 
 	@Override
 	public boolean execute() {
+		gyro.reset();
 		while (currentCheck < totalChecks) {
 			drive.arcade(driveSpeed, -gyro.getAngle()*.03, squareInputs);
 			try {
@@ -73,7 +73,9 @@ public class TimedDriveCommand extends Command {
 			}
 			drive.stop();
 			currentCheck++;	
+			System.out.println(gyro.getAngle());
 		}
+		currentCheck = 0;
 		return true;
 	}
 

@@ -67,8 +67,8 @@ public class Robot extends IterativeRobot {
 	private double sen;
 
 	// PNEUMATICS
-	DoubleSolenoid exDub = new DoubleSolenoid(2, 3);
-	Compressor c = new Compressor(0);
+//	DoubleSolenoid exDub = new DoubleSolenoid(2, 3);
+//	Compressor c = new Compressor(0);
 
 	// AUTONOMOUS MODE SELECTOR
 	Command autonomousCommand;
@@ -85,7 +85,7 @@ public class Robot extends IterativeRobot {
 		// CameraServer.getInstance().startAutomaticCapture(1);
 
 		// ENABLE COMPRESSOR
-		c.start();
+//		c.start();
 
 		// Set up the robot hardware ...
 		Motor left_front = Hardware.Motors.victorSP(LMOTOR_FRONT).invert(); // left rear
@@ -117,24 +117,14 @@ public class Robot extends IterativeRobot {
 		reactor.onTriggered(joystick.getButton(7), () -> switchControls());
 
 		// PNEUMATIC CONTROLS
-		reactor.onTriggered(joystick.getButton(9), () -> exDub.set(DoubleSolenoid.Value.kOff));
-		reactor.onTriggered(joystick.getButton(10), () -> exDub.set(DoubleSolenoid.Value.kForward));
-		reactor.onTriggered(joystick.getButton(11), () -> exDub.set(DoubleSolenoid.Value.kReverse));
+//		reactor.onTriggered(joystick.getButton(9), () -> exDub.set(DoubleSolenoid.Value.kOff));
+//		reactor.onTriggered(joystick.getButton(10), () -> exDub.set(DoubleSolenoid.Value.kForward));
+//		reactor.onTriggered(joystick.getButton(11), () -> exDub.set(DoubleSolenoid.Value.kReverse));
 
-		AngularTurnCommand turn = new AngularTurnCommand(drive, gyro, .2, false, 180);
 		autoChooser = new SendableChooser();
-		/**
-		 * autoChooser.addDefault("Default program", new JustForward());
-		 * autoChooser.addObject("1", new JustForward());
-		autoChooser.addObject("2", new JustForward());
-		autoChooser.addObject("3", new JustForward());
-		autoChooser.addObject("4", new JustForward());
-		autoChooser.addObject("5", new JustForward());
-		autoChooser.addObject("6", new JustForward());
-		autoChooser.addObject("7", new JustForward());
-		autoChooser.addObject("8", new JustForward());
-		**/
-		autoChooser.addObject("1", turn);
+		autoChooser.addDefault("Go forward (2s)", new TimedDriveCommand(drive, gyro, .2, false, 2000));
+		autoChooser.addObject("Turn 180", new AngularTurnCommand(drive, gyro, .2, false, 180));
+		autoChooser.addObject("Fetch", new GroupForwardLeft(drive, gyro));
 		SmartDashboard.putData("Autonomous Mode Selector", autoChooser);
 	}
 
@@ -145,12 +135,8 @@ public class Robot extends IterativeRobot {
 
 		gyro.reset();
 		
-		// autonomousCommand = (Command) autoChooser.getSelected();
 		autonomousCommand = (Command) autoChooser.getSelected();
-
-		AngularTurnCommand turnboi = new AngularTurnCommand(drive, gyro, .2, false, 180);
-		turnboi.execute();
-		// Strongback.submit(autonomousCommand);
+		Strongback.submit(autonomousCommand);
 	}
 
 	public void autonomousPeriodic() {
