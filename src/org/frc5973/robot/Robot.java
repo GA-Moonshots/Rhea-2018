@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
@@ -65,6 +66,7 @@ public class Robot extends IterativeRobot {
 	private String pattern = "###.###";
 	private DecimalFormat myFormat = new DecimalFormat(pattern);
 	private double sen;
+	
 
 	// PNEUMATICS
 //	DoubleSolenoid exDub = new DoubleSolenoid(2, 3);
@@ -97,6 +99,7 @@ public class Robot extends IterativeRobot {
 
 		Motor left = Motor.compose(left_front, left_rear);
 		Motor right = Motor.compose(right_front, right_rear);
+		
 
 		drive = new TankDrive(left, right);
 		// Set up the human input controls for teleoperated mode. We want to use
@@ -107,7 +110,7 @@ public class Robot extends IterativeRobot {
 		FlightStick joystick = Hardware.HumanInterfaceDevices.logitechExtreme3D(JOYSTICK_PORT);
 
 		SwitchReactor reactor = Strongback.switchReactor();
-		ContinuousRange sensitivity = joystick.getThrottle().map(t -> ((t + 1.0) / 2.0));
+		sensitivity = joystick.getThrottle().map(t -> ((t + 1.0) / 2.0));
 		sensitivity = joystick.getThrottle().map(Values.mapRange(-1.0, 1.0).toRange(0.0, 1.0));
 		driveSpeed = joystick.getPitch().scale(sensitivity::read).invert(); // scaled
 		turnSpeed = joystick.getRoll().scale(sensitivity::read);
@@ -126,6 +129,7 @@ public class Robot extends IterativeRobot {
 		autoChooser.addObject("Turn 180", new AngularTurnCommand(drive, gyro, .2, false, 180));
 		autoChooser.addObject("Fetch", new GroupForwardLeft(drive, gyro));
 		SmartDashboard.putData("Autonomous Mode Selector", autoChooser);
+		SmartDashboard.putNumber("Gyro", 0.0);
 	}
 
 	public void autonomousInit() {
@@ -140,6 +144,8 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void autonomousPeriodic() {
+		SmartDashboard.putNumber("Gyro", gyro.getAngle());
+		
 	}
 
 	@Override
@@ -154,7 +160,9 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		drive.arcade(driveSpeed.read(), turnSpeed.read());
-
+		SmartDashboard.putNumber("Gyro", gyro.getAngle());
+		
+		
 	}
 
 	@Override
@@ -170,5 +178,5 @@ public class Robot extends IterativeRobot {
 		// turnSpeed = turnSpeed.invert();
 		// turnSpeed2 = turnSpeed2.invert();
 	}
-
+	
 }
