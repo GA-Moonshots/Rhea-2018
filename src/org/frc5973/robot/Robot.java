@@ -77,7 +77,7 @@ public class Robot extends IterativeRobot {
 	@SuppressWarnings("rawtypes")
 	SendableChooser autoChooser;
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void robotInit() {
 		Strongback.configure().recordNoData().recordNoCommands().recordNoEvents().useExecutionPeriod(200,
@@ -125,9 +125,19 @@ public class Robot extends IterativeRobot {
 //		reactor.onTriggered(joystick.getButton(11), () -> exDub.set(DoubleSolenoid.Value.kReverse));
 
 		autoChooser = new SendableChooser();
-		autoChooser.addDefault("Go forward (2s)", new TimedDriveCommand(drive, gyro, .2, false, 2000));
-		autoChooser.addObject("Turn 180", new AngularTurnCommand(drive, gyro, .2, false, 180));
-		autoChooser.addObject("Fetch", new GroupForwardLeft(drive, gyro));
+		
+		autoChooser.addDefault("Start Left-Drop Left", new LeftCubeLeft(drive, gyro));
+		autoChooser.addObject("Start Left-Drop Right", new LeftCubeRight(drive, gyro));
+		autoChooser.addObject("Start Left-Don't Drop", new LeftCubeNone(drive, gyro));
+		
+		autoChooser.addDefault("Start Right-Drop Left", new RightCubeLeft(drive, gyro));
+		autoChooser.addObject("Start Right-Drop Right", new RightCubeRight(drive, gyro));
+		autoChooser.addObject("Start Right-Don't Drop", new RightCubeNone(drive, gyro));
+		
+		autoChooser.addDefault("Start Middle-Drop Left", new MiddleCubeLeft(drive, gyro));
+		autoChooser.addObject("Start Middle-Drop Right", new MiddleCubeRight(drive, gyro));
+		autoChooser.addObject("Start Left-Don't Drop", new MiddleCubeNone(drive, gyro));
+		
 		SmartDashboard.putData("Autonomous Mode Selector", autoChooser);
 		SmartDashboard.putNumber("Gyro", 0.0);
 	}
