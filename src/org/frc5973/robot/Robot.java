@@ -83,8 +83,8 @@ public class Robot extends IterativeRobot {
 		Strongback.configure().recordNoData().recordNoCommands().recordNoEvents().useExecutionPeriod(200,
 				TimeUnit.MILLISECONDS);
 		// Sets up the two cameras, one facing forward and once facing backwards
-		// CameraServer.getInstance().startAutomaticCapture(0);
-		// CameraServer.getInstance().startAutomaticCapture(1);
+		CameraServer.getInstance().startAutomaticCapture(0);
+		CameraServer.getInstance().startAutomaticCapture(1);
 
 		// ENABLE COMPRESSOR
 //		c.start();
@@ -139,7 +139,6 @@ public class Robot extends IterativeRobot {
 		autoChooser.addObject("Start Left-Don't Drop", new MiddleCubeNone(drive, gyro));
 		
 		SmartDashboard.putData("Autonomous Mode Selector", autoChooser);
-		SmartDashboard.putNumber("Gyro", 0.0);
 	}
 
 	public void autonomousInit() {
@@ -154,7 +153,6 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void autonomousPeriodic() {
-		SmartDashboard.putNumber("Gyro", gyro.getAngle());
 		
 	}
 
@@ -170,7 +168,6 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		drive.arcade(driveSpeed.read(), turnSpeed.read());
-		SmartDashboard.putNumber("Gyro", gyro.getAngle());
 		
 		
 	}
