@@ -69,8 +69,8 @@ public class Robot extends IterativeRobot {
 	
 
 	// PNEUMATICS
-//	DoubleSolenoid exDub = new DoubleSolenoid(2, 3);
-//	Compressor c = new Compressor(0);
+	DoubleSolenoid exDub = new DoubleSolenoid(2, 3);
+	Compressor c = new Compressor(0);
 
 	// AUTONOMOUS MODE SELECTOR
 	Command autonomousCommand;
@@ -87,7 +87,8 @@ public class Robot extends IterativeRobot {
 		CameraServer.getInstance().startAutomaticCapture(1);
 
 		// ENABLE COMPRESSOR
-//		c.start();
+		c.start();
+		c.setClosedLoopControl(true);
 
 		// Set up the robot hardware ...
 		Motor left_front = Hardware.Motors.victorSP(LMOTOR_FRONT).invert(); // left rear
@@ -95,7 +96,7 @@ public class Robot extends IterativeRobot {
 		// DoubleToDoubleFunction SPEED_LIMITER = Values.limiter(-0.1, 0.1);
 		Motor right_front = Hardware.Motors.victorSP(RMOTOR_FRONT); // right rear
 		Motor right_rear = Hardware.Motors.victorSP(RMOTOR_REAR);
-		gyro = new ADXRS450_Gyro();// right front
+		gyro = new GyroWrapper();// right front
 
 		Motor left = Motor.compose(left_front, left_rear);
 		Motor right = Motor.compose(right_front, right_rear);
@@ -112,7 +113,7 @@ public class Robot extends IterativeRobot {
 		SwitchReactor reactor = Strongback.switchReactor();
 		sensitivity = joystick.getThrottle().map(t -> ((t + 1.0) / 2.0));
 		sensitivity = joystick.getThrottle().map(Values.mapRange(-1.0, 1.0).toRange(0.0, 1.0));
-		driveSpeed = joystick.getPitch().scale(sensitivity::read).invert(); // scaled
+		driveSpeed = joystick.getPitch().scale(sensitivity::read); // scaled
 		turnSpeed = joystick.getRoll().scale(sensitivity::read);
 		turnSpeed2 = joystick.getYaw().scale(sensitivity::read);
 		// scaled and
@@ -120,9 +121,9 @@ public class Robot extends IterativeRobot {
 		reactor.onTriggered(joystick.getButton(7), () -> switchControls());
 
 		// PNEUMATIC CONTROLS
-//		reactor.onTriggered(joystick.getButton(9), () -> exDub.set(DoubleSolenoid.Value.kOff));
-//		reactor.onTriggered(joystick.getButton(10), () -> exDub.set(DoubleSolenoid.Value.kForward));
-//		reactor.onTriggered(joystick.getButton(11), () -> exDub.set(DoubleSolenoid.Value.kReverse));
+		reactor.onTriggered(joystick.getButton(9), () -> exDub.set(DoubleSolenoid.Value.kOff));
+		reactor.onTriggered(joystick.getButton(10), () -> exDub.set(DoubleSolenoid.Value.kForward));
+		reactor.onTriggered(joystick.getButton(11), () -> exDub.set(DoubleSolenoid.Value.kReverse));
 
 		autoChooser = new SendableChooser();
 		
@@ -130,15 +131,16 @@ public class Robot extends IterativeRobot {
 		autoChooser.addObject("Start Left-Drop Right", new LeftCubeRight(drive, gyro));
 		autoChooser.addObject("Start Left-Don't Drop", new LeftCubeNone(drive, gyro));
 		
-		autoChooser.addDefault("Start Right-Drop Left", new RightCubeLeft(drive, gyro));
+		autoChooser.addObject("Start Right-Drop Left", new RightCubeLeft(drive, gyro));
 		autoChooser.addObject("Start Right-Drop Right", new RightCubeRight(drive, gyro));
 		autoChooser.addObject("Start Right-Don't Drop", new RightCubeNone(drive, gyro));
 		
-		autoChooser.addDefault("Start Middle-Drop Left", new MiddleCubeLeft(drive, gyro));
+		autoChooser.addObject("Start Middle-Drop Left", new MiddleCubeLeft(drive, gyro));
 		autoChooser.addObject("Start Middle-Drop Right", new MiddleCubeRight(drive, gyro));
 		autoChooser.addObject("Start Left-Don't Drop", new MiddleCubeNone(drive, gyro));
 		
 		SmartDashboard.putData("Autonomous Mode Selector", autoChooser);
+
 	}
 
 	public void autonomousInit() {
@@ -153,7 +155,7 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void autonomousPeriodic() {
-		
+
 	}
 
 	@Override
@@ -162,7 +164,7 @@ public class Robot extends IterativeRobot {
 		Strongback.disable();
 		// Start Strongback functions ...
 		Strongback.start();
-		// c.setClosedLoopControl(true);
+		c.setClosedLoopControl(true);
 	}
 
 	@Override
@@ -177,13 +179,12 @@ public class Robot extends IterativeRobot {
 		// Tell Strongback that the robot is disabled so it can flush and kill
 		// commands.
 		Strongback.disable();
-		// c.setClosedLoopControl(false);
+		c.setClosedLoopControl(false);
 	}
 
 	public void switchControls() {
 		driveSpeed = driveSpeed.invert();
-		// turnSpeed = turnSpeed.invert();
-		// turnSpeed2 = turnSpeed2.invert();
 	}
 	
+		
 }

@@ -11,15 +11,3 @@ public class MiddleCubeNone extends CommandGroup {
 	}
 }
 
-// TODO
-// Left-Cube-Left
-// Left-Cube-Right
-// Left-Cube-None
-
-// Middle-Cube-Left
-// Middle-Cube-Right
-// Middle-Cube-None
-
-// Right-Cube-Left
-// Right-Cube-Right
-// Right-Cube-None
