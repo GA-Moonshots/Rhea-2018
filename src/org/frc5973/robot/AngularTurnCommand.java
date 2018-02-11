@@ -17,10 +17,6 @@ package org.frc5973.robot;
 
 import org.strongback.command.Command;
 import org.strongback.drive.TankDrive;
-import org.frc5973.robot.GyroWrapper;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.AnalogGyro;
-import edu.wpi.first.wpilibj.Sendable;
 
 /**
  * The command that drives the robot at a constant forward and turn speed for a

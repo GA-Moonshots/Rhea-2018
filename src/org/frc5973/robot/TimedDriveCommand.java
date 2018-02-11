@@ -52,7 +52,7 @@ public class TimedDriveCommand extends Command {
 			long time_move) {
 		super(drive);
 		this.drive = drive;
-		this.driveSpeed = driveSpeed;
+		this.driveSpeed = -driveSpeed;
 		this.squareInputs = squareInputs;
 		this.time_move = time_move;
 		this.totalChecks = 20 * time_move/1000;
@@ -76,6 +76,7 @@ public class TimedDriveCommand extends Command {
 			System.out.println(gyro.getRawAngle());
 		}
 		currentCheck = 0;
+
 		return true;
 	}
 

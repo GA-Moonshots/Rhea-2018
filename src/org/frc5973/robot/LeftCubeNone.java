@@ -6,8 +6,8 @@ import org.strongback.drive.TankDrive;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 
 public class LeftCubeNone extends CommandGroup {
-	public LeftCubeNone(TankDrive drive, ADXRS450_Gyro gyro) {
-		sequentially(new TimedDriveCommand(drive, gyro, .3, false, 5000));
+	public LeftCubeNone(TankDrive drive, GyroWrapper gyro) {
+		sequentially(new TimedDriveCommand(drive, gyro, .3, false, 4000));
 
 	}
 }

@@ -9,7 +9,6 @@ package org.frc5973.robot;
 import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 
-import org.frc5973.robot.*;
 import org.strongback.Strongback;
 import org.strongback.SwitchReactor;
 import org.strongback.command.Command;
@@ -20,8 +19,6 @@ import org.strongback.drive.TankDrive;
 import org.strongback.hardware.Hardware;
 import org.strongback.util.Values;
 
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.AnalogGyro;
 
 import edu.wpi.first.wpilibj.CameraServer;
 
@@ -29,11 +26,6 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Jaguar;
-import edu.wpi.first.wpilibj.Sendable;
-import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
 public class Robot extends IterativeRobot {
@@ -50,7 +42,7 @@ public class Robot extends IterativeRobot {
 	boolean done = false;
 	int counter = 0;
 	int counter2 = 0;
-	private ADXRS450_Gyro gyro;
+	private GyroWrapper gyro;
 
 	// Declares the TankDrive reference along with the ContinuousRange objects
 	private TankDrive drive;
@@ -92,8 +84,8 @@ public class Robot extends IterativeRobot {
 		exDub.set(DoubleSolenoid.Value.kForward);
 
 		// Set up the robot hardware ...
-		Motor left_front = Hardware.Motors.victorSP(LMOTOR_FRONT).invert(); // left rear
-		Motor left_rear = Hardware.Motors.victorSP(LMOTOR_REAR).invert(); // left front
+		Motor left_front = Hardware.Motors.victorSP(LMOTOR_FRONT).invert(); // INVERT left rear
+		Motor left_rear = Hardware.Motors.victorSP(LMOTOR_REAR).invert(); // INVERT left front
 		// DoubleToDoubleFunction SPEED_LIMITER = Values.limiter(-0.1, 0.1);
 		Motor right_front = Hardware.Motors.victorSP(RMOTOR_FRONT); // right rear
 		Motor right_rear = Hardware.Motors.victorSP(RMOTOR_REAR);
@@ -114,7 +106,7 @@ public class Robot extends IterativeRobot {
 		SwitchReactor reactor = Strongback.switchReactor();
 		sensitivity = joystick.getThrottle().map(t -> ((t + 1.0) / 2.0));
 		sensitivity = joystick.getThrottle().map(Values.mapRange(-1.0, 1.0).toRange(0.0, 1.0));
-		driveSpeed = joystick.getPitch().scale(sensitivity::read); // scaled
+		driveSpeed = joystick.getPitch().scale(sensitivity::read);
 		turnSpeed = joystick.getRoll().scale(sensitivity::read);
 		turnSpeed2 = joystick.getYaw().scale(sensitivity::read);
 		// scaled and
@@ -138,10 +130,9 @@ public class Robot extends IterativeRobot {
 		
 		autoChooser.addObject("Start Middle-Drop Left", new MiddleCubeLeft(drive, gyro));
 		autoChooser.addObject("Start Middle-Drop Right", new MiddleCubeRight(drive, gyro));
-		autoChooser.addObject("Start Left-Don't Drop", new MiddleCubeNone(drive, gyro));
+		autoChooser.addObject("Start Middle-Don't Drop", new MiddleCubeNone(drive, gyro));
 		
 		SmartDashboard.putData("Autonomous Mode Selector", autoChooser);
-
 	}
 
 	public void autonomousInit() {
@@ -166,6 +157,7 @@ public class Robot extends IterativeRobot {
 		// Start Strongback functions ...
 		Strongback.start();
 		c.setClosedLoopControl(true);
+
 	}
 
 	@Override
