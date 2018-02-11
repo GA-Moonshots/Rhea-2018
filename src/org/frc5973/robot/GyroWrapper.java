@@ -16,5 +16,9 @@ public class GyroWrapper extends ADXRS450_Gyro {
 			return original % 360;
 		}
 	}
+	
+	public double getRawAngle(){
+		return super.getAngle();
+	}
 
 }

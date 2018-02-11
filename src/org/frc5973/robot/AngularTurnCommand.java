@@ -17,7 +17,7 @@ package org.frc5973.robot;
 
 import org.strongback.command.Command;
 import org.strongback.drive.TankDrive;
-
+import org.frc5973.robot.GyroWrapper;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Sendable;
@@ -31,7 +31,7 @@ public class AngularTurnCommand extends Command {
 	private final TankDrive drive;
 	private final double turnSpeed;
 	private final boolean squareInputs;
-	private ADXRS450_Gyro gyro;
+	private GyroWrapper gyro;
 	private double currentAngle;
 	private double angle;
 
@@ -49,7 +49,7 @@ public class AngularTurnCommand extends Command {
 	 * @param duration
 	 *            the duration of this command; should be positive
 	 */
-	public AngularTurnCommand(TankDrive drive, ADXRS450_Gyro gyro, double turnSpeed, boolean squareInputs,
+	public AngularTurnCommand(TankDrive drive, GyroWrapper gyro, double turnSpeed, boolean squareInputs,
 			double angle) {
 		super(drive);
 		this.drive = drive;
@@ -66,7 +66,7 @@ public class AngularTurnCommand extends Command {
 		 * is +/- 3 of the desired angle
 		 */
 		System.out.print("startAng");
-		currentAngle = gyro.getAngle();
+		currentAngle = gyro.getRawAngle();
 		while ((currentAngle < (angle - 1)) || (currentAngle > (angle + 1))) {
 			//checks to see whether should under correct
 			if (currentAngle < (angle)) {
@@ -78,8 +78,8 @@ public class AngularTurnCommand extends Command {
 					e.printStackTrace();
 				}
 				drive.stop();
-				currentAngle = gyro.getAngle();
-				System.out.println(gyro.getAngle());
+				currentAngle = gyro.getRawAngle();
+				System.out.println(gyro.getRawAngle());
 
 			}
 			
@@ -93,8 +93,8 @@ public class AngularTurnCommand extends Command {
 					e.printStackTrace();
 				}
 				drive.stop();
-				currentAngle = gyro.getAngle();
-				System.out.println(gyro.getAngle());
+				currentAngle = gyro.getRawAngle();
+				System.out.println(gyro.getRawAngle());
 
 			}
 		}

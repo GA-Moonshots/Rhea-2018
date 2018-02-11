@@ -32,7 +32,7 @@ public class TimedDriveCommand extends Command {
 	private long time_move;
 	private long totalChecks;
 	private long currentCheck;
-	private ADXRS450_Gyro gyro;
+	private GyroWrapper gyro;
 
 	/**
 	 * Create a new autonomous command.
@@ -48,7 +48,7 @@ public class TimedDriveCommand extends Command {
 	 * @param duration
 	 *            the duration of this command; should be positive
 	 */
-	public TimedDriveCommand(TankDrive drive, ADXRS450_Gyro gyro, double driveSpeed, boolean squareInputs,
+	public TimedDriveCommand(TankDrive drive, GyroWrapper gyro, double driveSpeed, boolean squareInputs,
 			long time_move) {
 		super(drive);
 		this.drive = drive;
@@ -64,7 +64,7 @@ public class TimedDriveCommand extends Command {
 	public boolean execute() {
 		gyro.reset();
 		while (currentCheck < totalChecks) {
-			drive.arcade(driveSpeed, -gyro.getAngle()*.03, squareInputs);
+			drive.arcade(driveSpeed, -gyro.getRawAngle()*.03, squareInputs);
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException e) {
@@ -73,7 +73,7 @@ public class TimedDriveCommand extends Command {
 			}
 			drive.stop();
 			currentCheck++;	
-			System.out.println(gyro.getAngle());
+			System.out.println(gyro.getRawAngle());
 		}
 		currentCheck = 0;
 		return true;

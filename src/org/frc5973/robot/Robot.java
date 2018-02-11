@@ -89,6 +89,7 @@ public class Robot extends IterativeRobot {
 		// ENABLE COMPRESSOR
 		c.start();
 		c.setClosedLoopControl(true);
+		exDub.set(DoubleSolenoid.Value.kForward);
 
 		// Set up the robot hardware ...
 		Motor left_front = Hardware.Motors.victorSP(LMOTOR_FRONT).invert(); // left rear
