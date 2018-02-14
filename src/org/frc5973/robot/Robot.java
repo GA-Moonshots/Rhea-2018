@@ -22,11 +22,11 @@ import java.util.concurrent.TimeUnit;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.wpilibj.Ultrasonic;
 
 /*
  * Imported from Strongback, a library that inherits from WPILib and streamlines many
@@ -59,6 +59,8 @@ public class Robot extends IterativeRobot {
 	private static final int RMOTOR_REAR = 2;
 	private static final int LMOTOR_FRONT = 0;
 	private static final int LMOTOR_REAR = 1;
+	private static final int LIFT_GRABBER = 14;
+	private static final int LIFT_ELEVATOR = 15;
 
 	// Declares our Gryo using the GyroWrapper class wecreated
 	private GyroWrapper gyro;
@@ -113,6 +115,10 @@ public class Robot extends IterativeRobot {
 		Motor right_front = Hardware.Motors.victorSP(RMOTOR_FRONT);
 		Motor right_rear = Hardware.Motors.victorSP(RMOTOR_REAR);
 		
+		// Sets up the motors for the elevator and the grabber
+		Motor lift_elevator = Hardware.Motors.victorSP(LIFT_ELEVATOR);
+		Motor lift_grabber = Hardware.Motors.victorSP(LIFT_GRABBER);
+		
 		// Instantiates the GyroScope using the GyroWrapper class we created
 		gyro = new GyroWrapper();
 
@@ -138,11 +144,19 @@ public class Robot extends IterativeRobot {
 
 		// Maps the switchControls method to the button on the JoyStick
 		reactor.onTriggered(joystick.getButton(7), () -> switchControls());
-
+		
+		// Maps the buttons for the elevator control
+		reactor.onTriggered(joystick.getButton(9), () -> lift_elevator.setSpeed(0.5));
+		reactor.onUntriggered(joystick.getButton(9), () -> lift_elevator.stop());
+		
+		// Maps the buttons for the grabber control
+		reactor.onTriggered(joystick.getButton(10), () -> lift_grabber.setSpeed(0.5));
+		reactor.onUntriggered(joystick.getButton(10), () -> lift_grabber.stop());
+		
 		// Maps the Pneumatics controls to the buttons on the joystick
-		reactor.onTriggered(joystick.getButton(9), () -> exDub.set(DoubleSolenoid.Value.kOff));
-		reactor.onTriggered(joystick.getButton(10), () -> exDub.set(DoubleSolenoid.Value.kForward));
-		reactor.onTriggered(joystick.getButton(11), () -> exDub.set(DoubleSolenoid.Value.kReverse));
+		reactor.onTriggered(joystick.getButton(11), () -> exDub.set(DoubleSolenoid.Value.kOff));
+		reactor.onTriggered(joystick.getButton(12), () -> exDub.set(DoubleSolenoid.Value.kForward));
+		reactor.onUntriggered(joystick.getButton(12), () -> exDub.set(DoubleSolenoid.Value.kReverse));
 
 		/*
 		 * Sets up the autonomous mode chooser and lists the 9 possible options. 
