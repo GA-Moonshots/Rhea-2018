@@ -13,6 +13,7 @@ package org.frc5973.robot;
 
 // Imported from the Java Library
 import java.util.concurrent.TimeUnit;
+import edu.wpi.cscore.UsbCamera;
 
 /*
  * WPI is the main library that FRC uses. It's kind of complicated, so we use another
@@ -91,8 +92,11 @@ public class Robot extends IterativeRobot {
 				TimeUnit.MILLISECONDS);
 		
 		// Sets up the two cameras, one facing forward and once facing backwards
-		CameraServer.getInstance().startAutomaticCapture(0);
-		CameraServer.getInstance().startAutomaticCapture(1);
+		
+		UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture(0);
+		UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture(1);
+		camera1.setResolution(160,120);
+		camera2.setResolution(160,120);
 
 		// Enables compressor and immediately activates the solenoid to grasp the power cube
 		c.start();
