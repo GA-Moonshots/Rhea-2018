@@ -13,7 +13,6 @@ package org.frc5973.robot;
 
 // Imported from the Java Library
 import java.util.concurrent.TimeUnit;
-import edu.wpi.cscore.UsbCamera;
 
 /*
  * WPI is the main library that FRC uses. It's kind of complicated, so we use another
@@ -24,7 +23,10 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.*;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.Ultrasonic;
 
 /*
  * Imported from Strongback, a library that inherits from WPILib and streamlines many
@@ -60,6 +62,9 @@ public class Robot extends IterativeRobot {
 
 	// Declares our Gryo using the GyroWrapper class wecreated
 	private GyroWrapper gyro;
+	
+	// Declare our Ultrasonic sensor
+	AnalogInput ultra = new AnalogInput(0);
 
 	// Declares the TankDrive reference along with the ContinuousRange objects
 	private TankDrive drive;
@@ -92,12 +97,11 @@ public class Robot extends IterativeRobot {
 				TimeUnit.MILLISECONDS);
 		
 		// Sets up the two cameras, one facing forward and once facing backwards
-		
 		UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture(0);
 		UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture(1);
 		camera1.setResolution(160,120);
 		camera2.setResolution(160,120);
-
+		
 		// Enables compressor and immediately activates the solenoid to grasp the power cube
 		c.start();
 		c.setClosedLoopControl(true);
@@ -183,7 +187,7 @@ public class Robot extends IterativeRobot {
 	 * scheduler instead
 	 * @deprecated
 	 */
-	@Deprecated
+	
 	public void autonomousPeriodic() {
 
 	}
@@ -218,6 +222,8 @@ public class Robot extends IterativeRobot {
 		// Reads how fast and if the robot should turn and passes that to the drive.arcade method
 		drive.arcade(driveSpeed.read(), turnSpeed.read());
 		
+		// Sets up our ultrasonic sensor
+		SmartDashboard.putNumber("Ultra Distance Reading", ultra.getVoltage()/0.00097);
 		
 	}
 
