@@ -53,20 +53,23 @@ import org.strongback.util.Values;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class Robot extends IterativeRobot {
 
-	// Declares the ports for the motors and joysticks
-	private static final int JOYSTICK_PORT = 0; // in driver station
+	// USB port for driver station
+	private static final int JOYSTICK_PORT = 0;// in driver station
+	//PWM ports on the roboRIO
 	private static final int RMOTOR_FRONT = 3;
 	private static final int RMOTOR_REAR = 2;
 	private static final int LMOTOR_FRONT = 0;
 	private static final int LMOTOR_REAR = 1;
-	private static final int LIFT_GRABBER = 14;
-	private static final int LIFT_ELEVATOR = 15;
+	private static final int WINCH_MOTOR = 6;
+	private static final int LIFT_PULLEY = 5;
+	private static final int LIFT_ELEVATOR = 4;
 
 	// Declares our Gryo using the GyroWrapper class wecreated
 	private GyroWrapper gyro;
 	
 	// Declare our Ultrasonic sensor
 	AnalogInput ultra = new AnalogInput(0);
+	AnalogInput actuator = new AnalogInput(1);
 
 	// Declares the TankDrive reference along with the ContinuousRange objects
 	private TankDrive drive;
@@ -78,12 +81,16 @@ public class Robot extends IterativeRobot {
 	
 
 	// Declares our Compressor and DoubleSolenoid for pneumatics 
-	DoubleSolenoid exDub = new DoubleSolenoid(2, 3);
-	Compressor c = new Compressor(0);
+	private DoubleSolenoid exDub = new DoubleSolenoid(2, 3);
+	private Compressor c = new Compressor(0);
+	
+	//Making this motor an instance variable so our autonomous mode can access this as well
+	private Motor lift_pulley;
+	private Motor lift_elevator;
 
 	// Declares our SendableChooser and Command for our autonomous mode selector
-	Command autonomousCommand;
-	SendableChooser autoChooser;
+	private Command autonomousCommand;
+	private SendableChooser autoChooser;
 
 	/**
 	 * The initialization method for our robot which is called when we turn it on. 
@@ -116,8 +123,8 @@ public class Robot extends IterativeRobot {
 		Motor right_rear = Hardware.Motors.victorSP(RMOTOR_REAR);
 		
 		// Sets up the motors for the elevator and the grabber
-		Motor lift_elevator = Hardware.Motors.victorSP(LIFT_ELEVATOR);
-		Motor lift_grabber = Hardware.Motors.victorSP(LIFT_GRABBER);
+		lift_elevator = Hardware.Motors.victorSP(LIFT_ELEVATOR);
+		lift_pulley = Hardware.Motors.victorSP(LIFT_PULLEY);
 		
 		// Instantiates the GyroScope using the GyroWrapper class we created
 		gyro = new GyroWrapper();
@@ -148,15 +155,21 @@ public class Robot extends IterativeRobot {
 		// Maps the buttons for the elevator control
 		reactor.onTriggered(joystick.getButton(9), () -> lift_elevator.setSpeed(0.5));
 		reactor.onUntriggered(joystick.getButton(9), () -> lift_elevator.stop());
+		//Moves elevator down
+		reactor.onTriggered(joystick.getButton(10), () -> lift_elevator.setSpeed(-0.5));
+		reactor.onUntriggered(joystick.getButton(10), () -> lift_elevator.stop());
 		
 		// Maps the buttons for the grabber control
-		reactor.onTriggered(joystick.getButton(10), () -> lift_grabber.setSpeed(0.5));
-		reactor.onUntriggered(joystick.getButton(10), () -> lift_grabber.stop());
+		reactor.onTriggered(joystick.getButton(3), () -> lift_pulley.setSpeed(0.5));
+		reactor.onUntriggered(joystick.getButton(3), () -> lift_pulley.stop());
+		//tilting arm down by reeling out pulley
+		reactor.onTriggered(joystick.getButton(4), () -> lift_pulley.setSpeed(-0.5));
+		reactor.onUntriggered(joystick.getButton(4), () -> lift_pulley.stop());
 		
 		// Maps the Pneumatics controls to the buttons on the joystick
-		reactor.onTriggered(joystick.getButton(11), () -> exDub.set(DoubleSolenoid.Value.kOff));
-		reactor.onTriggered(joystick.getButton(12), () -> exDub.set(DoubleSolenoid.Value.kForward));
-		reactor.onUntriggered(joystick.getButton(12), () -> exDub.set(DoubleSolenoid.Value.kReverse));
+		reactor.onTriggered(joystick.getButton(1), () -> exDub.set(DoubleSolenoid.Value.kOff));
+		reactor.onTriggered(joystick.getButton(2), () -> exDub.set(DoubleSolenoid.Value.kForward));
+		reactor.onUntriggered(joystick.getButton(2), () -> exDub.set(DoubleSolenoid.Value.kReverse));
 
 		/*
 		 * Sets up the autonomous mode chooser and lists the 9 possible options. 
