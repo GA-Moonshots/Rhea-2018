@@ -78,6 +78,17 @@ public class ArmCommand extends Command {
 			lift_elevator.stop();
 		}
 		
+		if (tilt_time > 0){
+			lift_pulley.setSpeed(tilt_speed);
+			try {
+				Thread.sleep(tilt_time);
+			} catch (InterruptedException e) {
+				System.out.println("Error here");
+				e.printStackTrace();
+			}
+			lift_pulley.stop();
+		}
+		
 		return true;
 
 	}
