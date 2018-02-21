@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 /*
  * WPI is the main library that FRC uses. It's kind of complicated, so we use another
- * library to help. We are using Pneumatics so we have to import directly from
+ * library to help. We are using s so we have to import directly from
  * WPI lib
  */
 import edu.wpi.first.wpilibj.Compressor;
@@ -64,11 +64,12 @@ public class Robot extends IterativeRobot {
 	private static final int LIFT_PULLEY = 5;
 	private static final int LIFT_ELEVATOR = 4;
 
+	public static boolean isCarryingGlobal = false;
 	// Declares our Gryo using the GyroWrapper class wecreated
 	private GyroWrapper gyro;
 	
-	// Declare our Ultrasonic sensor
-	AnalogInput ultra = new AnalogInput(0);
+	// Declares our sensors
+	//AnalogInput ultra = new AnalogInput(0);
 	AnalogInput actuator = new AnalogInput(1);
 
 	// Declares the TankDrive reference along with the ContinuousRange objects
@@ -80,7 +81,7 @@ public class Robot extends IterativeRobot {
 	protected ContinuousRange sensitivity;
 	
 
-	// Declares our Compressor and DoubleSolenoid for pneumatics 
+	// Declares our Compressor and DoubleSolenoid for s 
 	private DoubleSolenoid exDub = new DoubleSolenoid(2, 3);
 	private Compressor c = new Compressor(0);
 	
@@ -166,10 +167,12 @@ public class Robot extends IterativeRobot {
 		reactor.onTriggered(joystick.getButton(4), () -> lift_pulley.setSpeed(-0.5));
 		reactor.onUntriggered(joystick.getButton(4), () -> lift_pulley.stop());
 		
+		reactor.onTriggered(joystick.getButton(1), 
+				()->Strongback.submit(new PneumaticGrab(exDub, isCarryingGlobal)));
 		// Maps the Pneumatics controls to the buttons on the joystick
-		reactor.onTriggered(joystick.getButton(1), () -> exDub.set(DoubleSolenoid.Value.kOff));
-		reactor.onTriggered(joystick.getButton(2), () -> exDub.set(DoubleSolenoid.Value.kForward));
-		reactor.onUntriggered(joystick.getButton(2), () -> exDub.set(DoubleSolenoid.Value.kReverse));
+		//reactor.onTriggered(joystick.getButton(1), () -> exDub.set(DoubleSolenoid.Value.kOff));
+		//reactor.onTriggered(joystick.getButton(2), () -> exDub.set(DoubleSolenoid.Value.kForward));
+		//reactor.onUntriggered(joystick.getButton(2), () -> exDub.set(DoubleSolenoid.Value.kReverse));
 
 		/*
 		 * Sets up the autonomous mode chooser and lists the 9 possible options. 
@@ -189,7 +192,7 @@ public class Robot extends IterativeRobot {
 		autoChooser.addObject("Start Middle-Drop Left", new MiddleCubeLeft(drive, gyro));
 		autoChooser.addObject("Start Middle-Drop Right", new MiddleCubeRight(drive, gyro));
 		autoChooser.addObject("Start Middle-Don't Drop", new MiddleCubeNone(drive, gyro));
-		
+		 
 		SmartDashboard.putData("Autonomous Mode Selector", autoChooser);
 	}
 
@@ -250,7 +253,7 @@ public class Robot extends IterativeRobot {
 		drive.arcade(driveSpeed.read(), turnSpeed.read());
 		
 		// Sets up our ultrasonic sensor
-		SmartDashboard.putNumber("Ultra Distance Reading", ultra.getVoltage()/0.00097);
+		// SmartDashboard.putNumber("Ultra Distance Reading", ultra.getVoltage()/0.00097);
 		
 	}
 
@@ -278,6 +281,5 @@ public class Robot extends IterativeRobot {
 		// Inverts the drive speed
 		driveSpeed = driveSpeed.invert();
 	}
-	
 		
 }
