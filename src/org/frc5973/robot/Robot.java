@@ -65,6 +65,7 @@ public class Robot extends IterativeRobot {
 	private static final int LIFT_ELEVATOR = 4;
 
 	public static boolean isCarryingGlobal = false;
+	public static String currentState = "low";
 	// Declares our Gryo using the GyroWrapper class wecreated
 	private GyroWrapper gyro;
 	
@@ -169,6 +170,23 @@ public class Robot extends IterativeRobot {
 		
 		reactor.onTriggered(joystick.getButton(1), 
 				()->Strongback.submit(new PneumaticGrab(exDub, isCarryingGlobal)));
+		//low angle
+		//note that the arguments for this one are irrlevent; changing them wont do anything
+		reactor.onTriggered(joystick.getButton(2), 
+				()->Strongback.submit(new ArmReturn(lift_pulley, lift_elevator, exDub, c, 0, 0, 0, 0, false)));
+		
+		reactor.onTriggered(joystick.getButton(5), 
+				()->Strongback.submit(new ArmCommand(lift_pulley, lift_elevator, exDub, c, .3, 1000, -.3, 500, false)));
+		reactor.onTriggered(joystick.getButton(5), new Runnable(){
+			@Override public void run() {currentState = "mid";}});
+
+		
+		
+		reactor.onTriggered(joystick.getButton(6), 
+				()->Strongback.submit(new ArmCommand(lift_pulley, lift_elevator, exDub, c, .3, 2000, .3, 500, false)));
+		reactor.onTriggered(joystick.getButton(6), new Runnable(){
+			@Override
+			public void run() {currentState = "high";}});
 		// Maps the Pneumatics controls to the buttons on the joystick
 		//reactor.onTriggered(joystick.getButton(1), () -> exDub.set(DoubleSolenoid.Value.kOff));
 		//reactor.onTriggered(joystick.getButton(2), () -> exDub.set(DoubleSolenoid.Value.kForward));
