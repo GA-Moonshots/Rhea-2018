@@ -70,12 +70,14 @@ public class ArmReturn extends Command {
 	public boolean execute() {
 		if(Robot.currentState.equals("mid")){
 			ArmCommand returnFromMid = new ArmCommand(lift_pulley, lift_elevator, exDub, c, -.3, 1000, 0, 0, false);
-			Strongback.submit(returnFromMid);		
+			Strongback.submit(returnFromMid);	
+			Robot.currentState = "low";
 			return true;
 		}
 		else if (Robot.currentState.equals("high")){
 			ArmCommand returnFromHigh = new ArmCommand(lift_pulley, lift_elevator, exDub, c, -.3, 2000, -.3, 500, false);
-			Strongback.submit(returnFromHigh);		
+			Strongback.submit(returnFromHigh);
+			Robot.currentState = "low";
 			return true;
 		}
 		return true;

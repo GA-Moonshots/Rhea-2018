@@ -177,16 +177,13 @@ public class Robot extends IterativeRobot {
 		
 		reactor.onTriggered(joystick.getButton(5), 
 				()->Strongback.submit(new ArmCommand(lift_pulley, lift_elevator, exDub, c, .3, 1000, -.3, 500, false)));
-		reactor.onTriggered(joystick.getButton(5), new Runnable(){
-			@Override public void run() {currentState = "mid";}});
+		reactor.onTriggered(joystick.getButton(5), () -> currentState = "mid");
 
 		
 		
 		reactor.onTriggered(joystick.getButton(6), 
 				()->Strongback.submit(new ArmCommand(lift_pulley, lift_elevator, exDub, c, .3, 2000, .3, 500, false)));
-		reactor.onTriggered(joystick.getButton(6), new Runnable(){
-			@Override
-			public void run() {currentState = "high";}});
+		reactor.onTriggered(joystick.getButton(6), () -> currentState = "high");
 		// Maps the Pneumatics controls to the buttons on the joystick
 		//reactor.onTriggered(joystick.getButton(1), () -> exDub.set(DoubleSolenoid.Value.kOff));
 		//reactor.onTriggered(joystick.getButton(2), () -> exDub.set(DoubleSolenoid.Value.kForward));

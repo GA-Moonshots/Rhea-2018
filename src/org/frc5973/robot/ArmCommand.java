@@ -15,6 +15,7 @@
  */
 package org.frc5973.robot;
 
+import org.strongback.Strongback;
 import org.strongback.command.Command;
 import org.strongback.components.Motor;
 import edu.wpi.first.wpilibj.Compressor;
@@ -62,35 +63,65 @@ public class ArmCommand extends Command {
 		this.lift_time = lift_time;
 		this.tilt_speed = tilt_speed;
 		this.tilt_time = tilt_time;
-		this.close_grip = close_grip;
 	}
 
 	@Override
 	public boolean execute() {
-		if (lift_time > 0){
-			lift_elevator.setSpeed(lift_speed);
-			try {
-				Thread.sleep(lift_time);
-			} catch (InterruptedException e) {
-				System.out.println("Error here");
-				e.printStackTrace();
+		if(Robot.currentState.equals("low")) {
+			if (lift_time > 0){
+				lift_elevator.setSpeed(lift_speed);
+				try {
+					Thread.sleep(lift_time);
+				} catch (InterruptedException e) {
+					System.out.println("Error here");
+					e.printStackTrace();
+				}
+				lift_elevator.stop();
 			}
-			lift_elevator.stop();
-		}
-		
-		if (tilt_time > 0){
-			lift_pulley.setSpeed(tilt_speed);
-			try {
-				Thread.sleep(tilt_time);
-			} catch (InterruptedException e) {
-				System.out.println("Error here");
-				e.printStackTrace();
+			
+			if (tilt_time > 0){
+				lift_pulley.setSpeed(tilt_speed);
+				try {
+					Thread.sleep(tilt_time);
+				} catch (InterruptedException e) {
+					System.out.println("Error here");
+					e.printStackTrace();
+				}
+				lift_pulley.stop();
 			}
-			lift_pulley.stop();
-		}
-		
-		return true;
+			
+			return true;
 
+		}
+		
+		else {
+			Strongback.submit(new ArmReturn(lift_pulley, lift_elevator, exDub, c, 0, 0, 0, 0, false));
+			
+			if (lift_time > 0){
+				lift_elevator.setSpeed(lift_speed);
+				try {
+					Thread.sleep(lift_time);
+				} catch (InterruptedException e) {
+					System.out.println("Error here");
+					e.printStackTrace();
+				}
+				lift_elevator.stop();
+			}
+			
+			if (tilt_time > 0){
+				lift_pulley.setSpeed(tilt_speed);
+				try {
+					Thread.sleep(tilt_time);
+				} catch (InterruptedException e) {
+					System.out.println("Error here");
+					e.printStackTrace();
+				}
+				lift_pulley.stop();
+			}
+			
+			return true;
+		}
+		
 	}
 
 	@Override
