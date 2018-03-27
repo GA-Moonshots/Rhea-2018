@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
  */
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.*;
@@ -66,6 +67,8 @@ public class Robot extends IterativeRobot {
 
 	public static boolean isCarryingGlobal = false;
 	public static String currentState = "low";
+	public static String gameData;
+	
 	// Declares our Gryo using the GyroWrapper class wecreated
 	private GyroWrapper gyro;
 	
@@ -196,17 +199,13 @@ public class Robot extends IterativeRobot {
 		 */
 		autoChooser = new SendableChooser();
 		
-		autoChooser.addDefault("Start Left-Drop Left", new LeftCubeLeft(drive, gyro));
-		autoChooser.addObject("Start Left-Drop Right", new LeftCubeRight(drive, gyro));
-		autoChooser.addObject("Start Left-Don't Drop", new LeftCubeNone(drive, gyro));
+		autoChooser.addDefault("Drop Left", new LeftDrop(drive, gyro));
+		autoChooser.addObject("Drop Right", new RightDrop(drive, gyro));
+		autoChooser.addObject("Drop Middle", new MiddleDrop(drive, gyro));
 		
-		autoChooser.addObject("Start Right-Drop Left", new RightCubeLeft(drive, gyro));
-		autoChooser.addObject("Start Right-Drop Right", new RightCubeRight(drive, gyro));
-		autoChooser.addObject("Start Right-Don't Drop", new RightCubeNone(drive, gyro));
-		
-		autoChooser.addObject("Start Middle-Drop Left", new MiddleCubeLeft(drive, gyro));
-		autoChooser.addObject("Start Middle-Drop Right", new MiddleCubeRight(drive, gyro));
-		autoChooser.addObject("Start Middle-Don't Drop", new MiddleCubeNone(drive, gyro));
+		autoChooser.addObject("Middle - don't drop", new MiddleCubeNone(drive, gyro));
+		autoChooser.addObject("Left - don't drop", new LeftCubeNone(drive, gyro));
+		autoChooser.addObject("Right - don't drop", new RightCubeNone(drive, gyro));
 		 
 		SmartDashboard.putData("Autonomous Mode Selector", autoChooser);
 	}
@@ -221,6 +220,7 @@ public class Robot extends IterativeRobot {
 
 		// Resets the Gyro to Zero degrees
 		gyro.reset();
+		gameData = DriverStation.getInstance().getGameSpecificMessage();
 		
 		// Reads and submits (to the scheduler) the chose command from the SmartDhashboard
 		autonomousCommand = (Command) autoChooser.getSelected();
