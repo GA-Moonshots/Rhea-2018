@@ -13,14 +13,19 @@ public class LeftDrop extends CommandGroup {
 		String gameData;
 		gameData = DriverStation.getInstance().getGameSpecificMessage();
 		if(gameData.length() > 0) {
-			sequentially(new LeftCubeRight(drive, gyro));
-		}
-		else if(gameData.charAt(0) == 'L') {
-			sequentially(new LeftCubeLeft(drive, gyro));
+			if(gameData.charAt(0) == 'R'){
+				sequentially(new LeftCubeRight(drive, gyro));
 			}
+			
+			else if(gameData.charAt(0) == 'L') {
+				sequentially(new LeftCubeLeft(drive, gyro));
+			}
+			
 		}
-		
+
 	}
+		
+}
 
 
 
