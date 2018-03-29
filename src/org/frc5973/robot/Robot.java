@@ -61,8 +61,9 @@ public class Robot extends IterativeRobot {
 	private static final int RMOTOR_REAR = 2;
 	private static final int LMOTOR_FRONT = 0;
 	private static final int LMOTOR_REAR = 1;
-	private static final int LIFT_PULLEY = 5;
+	private static final int LIFT_PULLEY = 12;
 	private static final int LIFT_ELEVATOR = 4;
+
 	
 	//Declares the ports for the winch and door
 	private static final int WINCH_PORT = 6;
