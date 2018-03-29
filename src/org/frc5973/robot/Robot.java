@@ -61,16 +61,17 @@ public class Robot extends IterativeRobot {
 	private static final int RMOTOR_REAR = 2;
 	private static final int LMOTOR_FRONT = 0;
 	private static final int LMOTOR_REAR = 1;
-	private static final int WINCH_MOTOR = 6;
 	private static final int LIFT_PULLEY = 5;
 	private static final int LIFT_ELEVATOR = 4;
+	
+	//Declares the ports for the winch and door
+	private static final int WINCH_PORT = 6;
+	private static final int WINCH2_PORT = 8;
 
 	public static boolean isCarryingGlobal = false;
 	public static String currentState = "low";
 	public static String gameData;
 	
-	private int currentTiltTime;
-	private int currentLiftTime;
 
 	// Declares our Gryo using the GyroWrapper class wecreated
 	private GyroWrapper gyro;
@@ -140,7 +141,11 @@ public class Robot extends IterativeRobot {
 		// Sets up the motors for the elevator and the grabber
 		lift_elevator = Hardware.Motors.victorSP(LIFT_ELEVATOR);
 		lift_pulley = Hardware.Motors.victorSP(LIFT_PULLEY);
-
+	
+		Motor winch = Hardware.Motors.victorSP(WINCH_PORT);
+		Motor winch2 = Hardware.Motors.victorSP(WINCH2_PORT);
+		
+		Motor winch_compose = Motor.compose(winch, winch2);
 		// Instantiates the GyroScope using the GyroWrapper class we created
 		gyro = new GyroWrapper();
 
@@ -222,6 +227,8 @@ public class Robot extends IterativeRobot {
 		reactor.onTriggered(joystick.getButton(4), () -> {
 			Strongback.submit(new ArmCommand(robotState, "max", lift_pulley, lift_elevator));});
 
+		reactor.onTriggered(joystick.getButton(11), () -> winch_compose.setSpeed(1));
+		reactor.onUntriggered(joystick.getButton(11), () -> winch_compose.stop());
 		//Puts the arms to the high state
 
 		

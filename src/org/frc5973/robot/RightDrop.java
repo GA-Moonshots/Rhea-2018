@@ -16,12 +16,12 @@ public class RightDrop extends CommandGroup {
 			if(Robot.gameData.charAt(0) == 'R') {
 				sequentially(new RightCubeRight(drive, gyro),
 						new ArmCommand(robotState, "mid", lift_pulley, life_elevator),
-						new ArmGrab(exDub));
+						new ArmRelease(exDub));
 			}
 			else if(Robot.gameData.charAt(0) == 'L') {
 				sequentially(new RightCubeLeft(drive, gyro),
 						new ArmCommand(robotState, "mid", lift_pulley, life_elevator),
-						new ArmGrab(exDub));
+						new ArmRelease(exDub));
 			}
 		}
 		else {

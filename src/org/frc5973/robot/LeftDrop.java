@@ -17,13 +17,13 @@ public class LeftDrop extends CommandGroup {
 			if(Robot.gameData.charAt(0) == 'R'){
 				sequentially(new LeftCubeRight(drive, gyro),
 						new ArmCommand(robotState, "mid", lift_pulley, lift_elevator),
-						new ArmGrab(exDub));
+						new ArmRelease(exDub));
 			}
 			
 			else if(Robot.gameData.charAt(0) == 'L') {
 				sequentially(new LeftCubeLeft(drive, gyro),
 						new ArmCommand(robotState, "mid", lift_pulley, lift_elevator),
-						new ArmGrab(exDub));
+						new ArmRelease(exDub));
 			}
 			
 		}
