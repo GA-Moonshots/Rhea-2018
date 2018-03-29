@@ -102,6 +102,8 @@ public class Robot extends IterativeRobot {
 	
 	private final int initialLiftTime = 0;
 	private final int initialTiltTime = 0;
+	private final int tinyTiltTime = 500;
+
 
 	/**
 	 * The initialization method for our robot which is called when we turn it on.
@@ -181,7 +183,27 @@ public class Robot extends IterativeRobot {
 //		// tilting arm down by reeling out pulley
 //		reactor.onTriggered(joystick.getButton(4), () -> lift_pulley.setSpeed(-0.5));
 //		reactor.onUntriggered(joystick.getButton(4), () -> lift_pulley.stop());
-
+		reactor.onTriggered(joystick.getButton(9), () -> {
+			lift_pulley.setSpeed(.3);
+			try {
+				Thread.sleep(tinyTiltTime);
+			} catch (InterruptedException e) {
+				System.out.println("Error here");
+				e.printStackTrace();
+			}
+			robotState.setCurrentTiltTime(robotState.getCurrentTiltTime()+tinyTiltTime);
+		});
+		
+		reactor.onTriggered(joystick.getButton(10), () -> {
+			lift_pulley.setSpeed(-.3);
+			try {
+				Thread.sleep(tinyTiltTime);
+			} catch (InterruptedException e) {
+				System.out.println("Error here");
+				e.printStackTrace();
+			}
+			robotState.setCurrentTiltTime(robotState.getCurrentTiltTime()+tinyTiltTime);
+		});
 		
 		//Either grabs or releases the box, depending on the state
 		reactor.onTriggered(joystick.getButton(1), () -> Strongback.submit(new ArmGrab(exDub)));
@@ -190,7 +212,7 @@ public class Robot extends IterativeRobot {
 		//Puts the arm to the mid state
 		reactor.onTriggered(joystick.getButton(5), () -> {
 			Strongback.submit(new ArmCommand(robotState, "low", lift_pulley, lift_elevator));});
-		
+
 		reactor.onTriggered(joystick.getButton(3), () -> {
 			Strongback.submit(new ArmCommand(robotState, "mid", lift_pulley, lift_elevator));});
 		
