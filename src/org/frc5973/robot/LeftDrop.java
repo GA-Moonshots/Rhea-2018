@@ -10,26 +10,29 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class LeftDrop extends CommandGroup {
-	public LeftDrop(RobotState robotState, Motor lift_pulley, Motor lift_elevator,TankDrive drive, GyroWrapper gyro, DoubleSolenoid exDub) {
+	public LeftDrop(CustomRobotState customRobotState, Motor lift_pulley, Motor lift_elevator,TankDrive drive, GyroWrapper gyro, DoubleSolenoid exDub) {
 		//drop right
 		
 		if(Robot.gameData.length() > 0) {
 			if(Robot.gameData.charAt(0) == 'R'){
 				sequentially(new LeftCubeRight(drive, gyro),
-						new ArmCommand(robotState, "mid", lift_pulley, lift_elevator),
+						new ArmCommand(customRobotState, "mid", lift_pulley, lift_elevator),
 						new ArmRelease(exDub));
 			}
 			
 			else if(Robot.gameData.charAt(0) == 'L') {
 				sequentially(new LeftCubeLeft(drive, gyro),
-						new ArmCommand(robotState, "mid", lift_pulley, lift_elevator),
+						new ArmCommand(customRobotState, "mid", lift_pulley, lift_elevator),
 						new ArmRelease(exDub));
+			}
+			else{
+				sequentially(new LeftCubeNone(drive, gyro));
 			}
 			
 		}
-		else {
-			Strongback.submit(new LeftCubeNone(drive, gyro));
-		}
+//		else {
+//			runSequentially(new LeftCubeNone(drive, gyro));
+//		}
 
 	}
 		

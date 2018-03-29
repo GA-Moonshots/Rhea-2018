@@ -15,11 +15,9 @@
  */
 package org.frc5973.robot;
 
-import org.strongback.Strongback;
 import org.strongback.command.Command;
 import org.strongback.components.Motor;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
+import org.frc5973.robot.CustomRobotState;
 
 /**
  * The command that drives the robot at a constant forward and turn speed for a
@@ -40,9 +38,9 @@ public class ArmCommand extends Command {
 	private int liftTime;
 	private int liftScalar;
 	private int tiltScalar;
-	private RobotState robotState;
+	private CustomRobotState state;
 	private final double tiltSpeed = .3;
-	private final double liftSpeed = .3;
+	private final double liftSpeed = .6;
 
 	/**
 	 * Create a new autonomous command.
@@ -58,20 +56,21 @@ public class ArmCommand extends Command {
 	 * @param duration
 	 *            the duration of this command; should be positive
 	 */
-	public ArmCommand(RobotState robotState, String requestedState, Motor lift_pulley,
+	public ArmCommand(CustomRobotState customRobotState, String requestedState, Motor lift_pulley,
 			Motor lift_elevator) {
 		this.lift_pulley = lift_pulley;
 		this.lift_elevator = lift_elevator;
-		this.currentTiltTime = robotState.getCurrentTiltTime();
-		this.currentLiftTime = robotState.getCurrentLiftTime();
+		this.currentTiltTime = customRobotState.getCurrentTiltTime();
+		this.currentLiftTime = customRobotState.getCurrentLiftTime();
 		this.requestedState = requestedState;
-		liftScalar = 1;
-		tiltScalar = 1;
-		this.robotState = robotState;
+		this.liftScalar = 1;
+		this.tiltScalar = 1;
+		this.state = customRobotState;
 	}
 
 	@Override
 	public boolean execute() {
+		System.out.println("Test");
 		if (requestedState.equals("low")) {
 			liftTime = 0 - currentLiftTime;
 			if (liftTime < 0) {
@@ -82,63 +81,54 @@ public class ArmCommand extends Command {
 			if (tiltTime < 0) {
 				tiltScalar = -1;
 			}
+		
 
 		} else if (requestedState.equals("mid")) {
-			liftTime = 1000 - currentLiftTime;
+			liftTime = 10000 - currentLiftTime;
 			if (liftTime < 0) {
 				liftScalar = -1;
 			}
 
-			tiltTime = 1000 - currentTiltTime;
+			tiltTime = 2500 - currentTiltTime;
 			if (tiltTime < 0) {
 				tiltScalar = -1;
 			}
 		}
 
 		else if (requestedState.equals("high")) {
-			liftTime = 2000 - currentLiftTime;
+			liftTime = 19500 - currentLiftTime;
 			if (liftTime < 0) {
 				liftScalar = -1;
 			}
 
-			tiltTime = 2000 - currentTiltTime;
+			tiltTime = 5000 - currentTiltTime;
 			if (tiltTime < 0) {
 				tiltScalar = -1;
 			}
 		}
-
-		else if (requestedState.equals("max")) {
-			liftTime = 3000 - currentLiftTime;
-			if (liftTime < 0) {
-				liftScalar = -1;
-			}
-
-			tiltTime = 3000 - currentTiltTime;
-			if (tiltTime < 0) {
-				tiltScalar = -1;
-			}
-		}
-
-		lift_elevator.setSpeed(liftScalar*liftSpeed);
-		try {
-			Thread.sleep(liftTime);
-		} catch (InterruptedException e) {
-			System.out.println("Error here");
-			e.printStackTrace();
-		}
-		lift_elevator.stop();
 
 		lift_pulley.setSpeed(tiltScalar*tiltSpeed);
 		try {
-			Thread.sleep(tiltTime);
+			Thread.sleep(Math.abs(tiltTime));
 		} catch (InterruptedException e) {
 			System.out.println("Error here");
 			e.printStackTrace();
 		}
 		lift_pulley.stop();
 
-		robotState.setCurrentLiftTime(liftTime);
-		robotState.setCurrentTiltTime(tiltTime);
+		lift_elevator.setSpeed(liftScalar*liftSpeed);
+		try {
+			Thread.sleep(Math.abs(liftTime));
+		} catch (InterruptedException e) {
+			System.out.println("Error here");
+			e.printStackTrace();
+		}
+		lift_elevator.stop();
+//
+////thats fine
+		state.setCurrentLiftTime(liftTime);
+		state.setCurrentTiltTime(tiltTime);
+//		
 		
 		return true;
 		// if(Robot.currentState.equals("low")) {
@@ -201,6 +191,7 @@ public class ArmCommand extends Command {
 
 	@Override
 	public void interrupted() {
+		System.out.println("Exeuction Interupted");
 		lift_pulley.stop();
 		lift_elevator.stop();
 	}

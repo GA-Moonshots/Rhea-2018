@@ -61,17 +61,18 @@ public class Robot extends IterativeRobot {
 	private static final int RMOTOR_REAR = 2;
 	private static final int LMOTOR_FRONT = 0;
 	private static final int LMOTOR_REAR = 1;
-	private static final int LIFT_PULLEY = 12;
+	private static final int LIFT_PULLEY = 7;
 	private static final int LIFT_ELEVATOR = 4;
 
 	
-	//Declares the ports for the winch and door
-	private static final int WINCH_PORT = 6;
-	private static final int WINCH2_PORT = 8;
+//	//Declares the ports for the winch and door
+//	private static final int WINCH_PORT = 6;
+//	private static final int WINCH2_PORT = 8;
 
 	public static boolean isCarryingGlobal = false;
 	public static String currentState = "low";
 	public static String gameData;
+	
 	
 
 	// Declares our Gryo using the GyroWrapper class wecreated
@@ -103,7 +104,7 @@ public class Robot extends IterativeRobot {
 	private SendableChooser autoChooser;
 	
 	private final int initialLiftTime = 0;
-	private final int initialTiltTime = 0;
+	private final int initialTiltTime = 1000;
 	private final int tinyTiltTime = 500;
 
 
@@ -116,7 +117,15 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-
+		try {
+			gameData = DriverStation.getInstance().getGameSpecificMessage();
+			// Reads and submits (to the scheduler) the chose command from the
+			// SmartDhashboard
+		}
+		catch(Exception e) {
+			System.out.println("\nCouldn't get data from the DriverStation - going straight\n");
+			gameData = "QQQ";
+		}
 		// Sets up a logging system through Strongback (not sure about this)
 		Strongback.configure().recordNoData().recordNoCommands().recordNoEvents().useExecutionPeriod(200,
 				TimeUnit.MILLISECONDS);
@@ -140,13 +149,13 @@ public class Robot extends IterativeRobot {
 		Motor right_rear = Hardware.Motors.victorSP(RMOTOR_REAR);
 
 		// Sets up the motors for the elevator and the grabber
-		lift_elevator = Hardware.Motors.victorSP(LIFT_ELEVATOR);
-		lift_pulley = Hardware.Motors.victorSP(LIFT_PULLEY);
+		lift_elevator = Hardware.Motors.victorSP(LIFT_ELEVATOR).invert();
+		lift_pulley = Hardware.Motors.victorSP(LIFT_PULLEY).invert();
 	
-		Motor winch = Hardware.Motors.victorSP(WINCH_PORT);
-		Motor winch2 = Hardware.Motors.victorSP(WINCH2_PORT);
+//		Motor winch = Hardware.Motors.victorSP(WINCH_PORT);
+//		Motor winch2 = Hardware.Motors.victorSP(WINCH2_PORT);
 		
-		Motor winch_compose = Motor.compose(winch, winch2);
+//		Motor winch_compose = Motor.compose(winch, winch2);
 		// Instantiates the GyroScope using the GyroWrapper class we created
 		gyro = new GyroWrapper();
 
@@ -158,7 +167,7 @@ public class Robot extends IterativeRobot {
 		drive = new TankDrive(left, right);
 
 		
-		RobotState robotState = new RobotState(initialLiftTime, initialTiltTime);
+		CustomRobotState customRobotState = new CustomRobotState(initialLiftTime, initialTiltTime);
 
 		/*
 		 * Set up the human input controls for teleoperated mode. We want to use the
@@ -175,7 +184,28 @@ public class Robot extends IterativeRobot {
 
 		// Maps the switchControls method to the button on the JoyStick
 		reactor.onTriggered(joystick.getButton(7), () -> switchControls());
+		
+		reactor.onTriggered(joystick.getButton(5), () -> 
+		lift_elevator.setSpeed(.3));
+		reactor.onUntriggered(joystick.getButton(5), () -> 
+		lift_elevator.stop());
 
+		reactor.onTriggered(joystick.getButton(3), () -> 
+		lift_elevator.setSpeed(-.3));
+		reactor.onUntriggered(joystick.getButton(3), () -> 
+		lift_elevator.stop());
+		
+		reactor.onTriggered(joystick.getButton(4), () -> 
+		lift_pulley.setSpeed(-.3));
+		reactor.onUntriggered(joystick.getButton(4), () -> 
+		lift_pulley.stop());
+
+		reactor.onTriggered(joystick.getButton(6), () -> 
+		lift_pulley.setSpeed(.3));
+		reactor.onUntriggered(joystick.getButton(6), () -> 
+		lift_pulley.stop());
+
+	
 //		// Maps the buttons for the elevator control
 //		reactor.onTriggered(joystick.getButton(9), () -> lift_elevator.setSpeed(0.5));
 //		reactor.onUntriggered(joystick.getButton(9), () -> lift_elevator.stop());
@@ -197,8 +227,11 @@ public class Robot extends IterativeRobot {
 				System.out.println("Error here");
 				e.printStackTrace();
 			}
-			robotState.setCurrentTiltTime(robotState.getCurrentTiltTime()+tinyTiltTime);
+			customRobotState.setCurrentTiltTime(customRobotState.getCurrentTiltTime()+tinyTiltTime);
+			lift_pulley.stop();
+
 		});
+		
 		
 		reactor.onTriggered(joystick.getButton(10), () -> {
 			lift_pulley.setSpeed(-.3);
@@ -208,7 +241,9 @@ public class Robot extends IterativeRobot {
 				System.out.println("Error here");
 				e.printStackTrace();
 			}
-			robotState.setCurrentTiltTime(robotState.getCurrentTiltTime()+tinyTiltTime);
+			customRobotState.setCurrentTiltTime(customRobotState.getCurrentTiltTime()+tinyTiltTime);
+			lift_pulley.stop();
+
 		});
 		
 		//Either grabs or releases the box, depending on the state
@@ -216,20 +251,19 @@ public class Robot extends IterativeRobot {
 		reactor.onTriggered(joystick.getButton(2), () -> Strongback.submit(new ArmRelease(exDub)));
 
 		//Puts the arm to the mid state
-		reactor.onTriggered(joystick.getButton(5), () -> {
-			Strongback.submit(new ArmCommand(robotState, "low", lift_pulley, lift_elevator));});
-
-		reactor.onTriggered(joystick.getButton(3), () -> {
-			Strongback.submit(new ArmCommand(robotState, "mid", lift_pulley, lift_elevator));});
+//		reactor.onTriggered(joystick.getButton(5), () -> 
+//			Strongback.submit(new ArmCommand(customRobotState, "low", lift_pulley, lift_elevator)));
+//
+//		reactor.onTriggered(joystick.getButton(3), () -> 
+//			Strongback.submit(new ArmCommand(customRobotState, "mid", lift_pulley, lift_elevator)));
+//		
+//		reactor.onTriggered(joystick.getButton(6), () ->
+//			Strongback.submit(new ArmCommand(customRobotState, "high", lift_pulley, lift_elevator)));
+//		
 		
-		reactor.onTriggered(joystick.getButton(6), () -> {
-			Strongback.submit(new ArmCommand(robotState, "high", lift_pulley, lift_elevator));});
-		
-		reactor.onTriggered(joystick.getButton(4), () -> {
-			Strongback.submit(new ArmCommand(robotState, "max", lift_pulley, lift_elevator));});
-
-		reactor.onTriggered(joystick.getButton(11), () -> winch_compose.setSpeed(1));
-		reactor.onUntriggered(joystick.getButton(11), () -> winch_compose.stop());
+//
+//		reactor.onTriggered(joystick.getButton(11), () -> winch_compose.setSpeed(1));
+//		reactor.onUntriggered(joystick.getButton(11), () -> winch_compose.stop());
 		//Puts the arms to the high state
 
 		
@@ -248,9 +282,9 @@ public class Robot extends IterativeRobot {
 		 */
 		autoChooser = new SendableChooser();
 
-		autoChooser.addDefault("Drop Left", new LeftDrop(robotState, lift_pulley, lift_elevator, drive, gyro, exDub));
-		autoChooser.addObject("Drop Right", new RightDrop(robotState, lift_pulley, lift_elevator, drive, gyro, exDub));
-		autoChooser.addObject("Drop Middle", new MiddleDrop(robotState, lift_pulley, lift_elevator, drive, gyro, exDub));
+		autoChooser.addDefault("Drop Left", new LeftDrop(customRobotState, lift_pulley, lift_elevator, drive, gyro, exDub));
+		autoChooser.addObject("Drop Right", new RightDrop(customRobotState, lift_pulley, lift_elevator, drive, gyro, exDub));
+		autoChooser.addObject("Drop Middle", new MiddleDrop(customRobotState, lift_pulley, lift_elevator, drive, gyro, exDub));
 
 		autoChooser.addObject("Middle - don't drop", new MiddleCubeNone(drive, gyro));
 		autoChooser.addObject("Left - don't drop", new LeftCubeNone(drive, gyro));
@@ -275,7 +309,7 @@ public class Robot extends IterativeRobot {
 		// Tells the robot that we loaded a cube
 		isCarryingGlobal = true;
 		try {
-			gameData = DriverStation.getInstance().getGameSpecificMessage();
+//			gameData = DriverStation.getInstance().getGameSpecificMessage();
 			// Reads and submits (to the scheduler) the chose command from the
 			// SmartDhashboard
 			autonomousCommand = (Command) autoChooser.getSelected();

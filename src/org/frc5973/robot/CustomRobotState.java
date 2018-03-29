@@ -1,10 +1,10 @@
 package org.frc5973.robot;
 
-public class RobotState {
+public class CustomRobotState {
 	private int currentTiltTime;
 	private int currentLiftTime;
 	
-	public RobotState(int initialLiftTime, int initialTiltTime) {
+	public CustomRobotState(int initialLiftTime, int initialTiltTime) {
 		currentTiltTime = initialTiltTime;
 		currentLiftTime = initialLiftTime;
 	}
