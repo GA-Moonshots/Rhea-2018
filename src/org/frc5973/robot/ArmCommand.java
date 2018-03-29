@@ -27,17 +27,22 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
  */
 public class ArmCommand extends Command {
 
-	private DoubleSolenoid exDub;
-	private Compressor c;
-	
-	//Making this motor an instance variable so our autonomous mode can access this as well
+
+	// Making this motor an instance variable so our autonomous mode can access this
+	// as well
 	private Motor lift_pulley;
 	private Motor lift_elevator;
-	private double lift_speed;
-	private long lift_time;
-	private double tilt_speed;
-	private long tilt_time;
-	private boolean close_grip;
+
+	private String requestedState;
+	private int currentTiltTime;
+	private int currentLiftTime;
+	private int tiltTime;
+	private int liftTime;
+	private int liftScalar;
+	private int tiltScalar;
+	private RobotState robotState;
+	private final double tiltSpeed = .3;
+	private final double liftSpeed = .3;
 
 	/**
 	 * Create a new autonomous command.
@@ -53,75 +58,145 @@ public class ArmCommand extends Command {
 	 * @param duration
 	 *            the duration of this command; should be positive
 	 */
-	public ArmCommand(Motor lift_pulley, Motor lift_elevator, DoubleSolenoid exDub, Compressor c,
-			double lift_speed, long lift_time, double tilt_speed, long tilt_time, boolean close_grip) {
+	public ArmCommand(RobotState robotState, String requestedState, Motor lift_pulley,
+			Motor lift_elevator) {
 		this.lift_pulley = lift_pulley;
 		this.lift_elevator = lift_elevator;
-		this.exDub = exDub;
-		this.c = c;
-		this.lift_speed = lift_speed;
-		this.lift_time = lift_time;
-		this.tilt_speed = tilt_speed;
-		this.tilt_time = tilt_time;
+		this.currentTiltTime = robotState.getCurrentTiltTime();
+		this.currentLiftTime = robotState.getCurrentLiftTime();
+		this.requestedState = requestedState;
+		liftScalar = 1;
+		tiltScalar = 1;
+		this.robotState = robotState;
 	}
 
 	@Override
 	public boolean execute() {
-		if(Robot.currentState.equals("low")) {
-			if (lift_time > 0){
-				lift_elevator.setSpeed(lift_speed);
-				try {
-					Thread.sleep(lift_time);
-				} catch (InterruptedException e) {
-					System.out.println("Error here");
-					e.printStackTrace();
-				}
-				lift_elevator.stop();
+		if (requestedState.equals("low")) {
+			liftTime = 0 - currentLiftTime;
+			if (liftTime < 0) {
+				liftScalar = -1;
 			}
-			
-			if (tilt_time > 0){
-				lift_pulley.setSpeed(tilt_speed);
-				try {
-					Thread.sleep(tilt_time);
-				} catch (InterruptedException e) {
-					System.out.println("Error here");
-					e.printStackTrace();
-				}
-				lift_pulley.stop();
-			}
-			
-			return true;
 
-		}
-		
-		else {
-			Strongback.submit(new ArmReturn(lift_pulley, lift_elevator, exDub, c, 0, 0, 0, 0, false));
-			
-			if (lift_time > 0){
-				lift_elevator.setSpeed(lift_speed);
-				try {
-					Thread.sleep(lift_time);
-				} catch (InterruptedException e) {
-					System.out.println("Error here");
-					e.printStackTrace();
-				}
-				lift_elevator.stop();
+			tiltTime = 0 - currentTiltTime;
+			if (tiltTime < 0) {
+				tiltScalar = -1;
 			}
-			
-			if (tilt_time > 0){
-				lift_pulley.setSpeed(tilt_speed);
-				try {
-					Thread.sleep(tilt_time);
-				} catch (InterruptedException e) {
-					System.out.println("Error here");
-					e.printStackTrace();
-				}
-				lift_pulley.stop();
+
+		} else if (requestedState.equals("mid")) {
+			liftTime = 1000 - currentLiftTime;
+			if (liftTime < 0) {
+				liftScalar = -1;
 			}
-			
-			return true;
+
+			tiltTime = 1000 - currentTiltTime;
+			if (tiltTime < 0) {
+				tiltScalar = -1;
+			}
 		}
+
+		else if (requestedState.equals("high")) {
+			liftTime = 2000 - currentLiftTime;
+			if (liftTime < 0) {
+				liftScalar = -1;
+			}
+
+			tiltTime = 2000 - currentTiltTime;
+			if (tiltTime < 0) {
+				tiltScalar = -1;
+			}
+		}
+
+		else if (requestedState.equals("max")) {
+			liftTime = 3000 - currentLiftTime;
+			if (liftTime < 0) {
+				liftScalar = -1;
+			}
+
+			tiltTime = 3000 - currentTiltTime;
+			if (tiltTime < 0) {
+				tiltScalar = -1;
+			}
+		}
+
+		lift_elevator.setSpeed(liftScalar*liftSpeed);
+		try {
+			Thread.sleep(liftTime);
+		} catch (InterruptedException e) {
+			System.out.println("Error here");
+			e.printStackTrace();
+		}
+		lift_elevator.stop();
+
+		lift_pulley.setSpeed(tiltScalar*tiltSpeed);
+		try {
+			Thread.sleep(tiltTime);
+		} catch (InterruptedException e) {
+			System.out.println("Error here");
+			e.printStackTrace();
+		}
+		lift_pulley.stop();
+
+		robotState.setCurrentLiftTime(liftTime);
+		robotState.setCurrentTiltTime(tiltTime);
 		
+		return true;
+		// if(Robot.currentState.equals("low")) {
+		// if (lift_time > 0){
+		// lift_elevator.setSpeed(lift_speed);
+		// try {
+		// Thread.sleep(lift_time);
+		// } catch (InterruptedException e) {
+		// System.out.println("Error here");
+		// e.printStackTrace();
+		// }
+		// lift_elevator.stop();
+		// }
+		//
+		// if (tilt_time > 0){
+		// lift_pulley.setSpeed(tilt_speed);
+		// try {
+		// Thread.sleep(tilt_time);
+		// } catch (InterruptedException e) {
+		// System.out.println("Error here");
+		// e.printStackTrace();
+		// }
+		// lift_pulley.stop();
+		// }
+		//
+		// return true;
+		//
+		// }
+		//
+		// else {
+		// Strongback.submit(new ArmReturn(lift_pulley, lift_elevator, exDub, c, 0, 0,
+		// 0, 0, false));
+		//
+		// if (lift_time > 0){
+		// lift_elevator.setSpeed(lift_speed);
+		// try {
+		// Thread.sleep(lift_time);
+		// } catch (InterruptedException e) {
+		// System.out.println("Error here");
+		// e.printStackTrace();
+		// }
+		// lift_elevator.stop();
+		// }
+		//
+		// if (tilt_time > 0){
+		// lift_pulley.setSpeed(tilt_speed);
+		// try {
+		// Thread.sleep(tilt_time);
+		// } catch (InterruptedException e) {
+		// System.out.println("Error here");
+		// e.printStackTrace();
+		// }
+		// lift_pulley.stop();
+		// }
+		//
+		// return true;
+		// }
+
 	}
 
 	@Override

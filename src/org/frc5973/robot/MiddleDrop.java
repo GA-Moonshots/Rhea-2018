@@ -2,6 +2,7 @@ package org.frc5973.robot;
 
 import org.strongback.Strongback;
 import org.strongback.command.CommandGroup;
+import org.strongback.components.Motor;
 import org.strongback.drive.TankDrive;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -9,19 +10,25 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class MiddleDrop extends CommandGroup {
-	public MiddleDrop(TankDrive drive, GyroWrapper gyro, DoubleSolenoid exDub) {
+	public MiddleDrop(RobotState robotState, Motor lift_pulley, Motor life_elevator,TankDrive drive, GyroWrapper gyro, DoubleSolenoid exDub) {
 		//drop right
 		String gameData;
 		gameData = DriverStation.getInstance().getGameSpecificMessage();
 		if(gameData.length() > 0) {
 			if(gameData.charAt(0) == 'R') {
 				sequentially(new MiddleCubeRight(drive, gyro),
-						new PneumaticGrab(exDub));
+						new ArmCommand(robotState, "mid", lift_pulley, life_elevator),
+						new ArmRelease(exDub));
 			}
 			else if(gameData.charAt(0) == 'L') {
 				sequentially(new MiddleCubeLeft(drive, gyro),
-						new PneumaticGrab(exDub));
+						new ArmCommand(robotState, "mid", lift_pulley, life_elevator),
+						new ArmRelease(exDub));
 			}
+		}
+		else {
+			Strongback.submit(new MiddleCubeNone(drive, gyro));
+
 		}
 		
 	}

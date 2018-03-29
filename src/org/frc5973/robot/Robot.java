@@ -68,6 +68,9 @@ public class Robot extends IterativeRobot {
 	public static boolean isCarryingGlobal = false;
 	public static String currentState = "low";
 	public static String gameData;
+	
+	private int currentTiltTime;
+	private int currentLiftTime;
 
 	// Declares our Gryo using the GyroWrapper class wecreated
 	private GyroWrapper gyro;
@@ -96,6 +99,9 @@ public class Robot extends IterativeRobot {
 	// Declares our SendableChooser and Command for our autonomous mode selector
 	private Command autonomousCommand;
 	private SendableChooser autoChooser;
+	
+	private final int initialLiftTime = 0;
+	private final int initialTiltTime = 0;
 
 	/**
 	 * The initialization method for our robot which is called when we turn it on.
@@ -143,6 +149,9 @@ public class Robot extends IterativeRobot {
 		// Sets up the TankDrive which is the main Drive we use
 		drive = new TankDrive(left, right);
 
+		
+		RobotState robotState = new RobotState(initialLiftTime, initialTiltTime);
+
 		/*
 		 * Set up the human input controls for teleoperated mode. We want to use the
 		 * Logitech Attack 3D's throttle as a "sensitivity" input to scale the drive
@@ -159,39 +168,40 @@ public class Robot extends IterativeRobot {
 		// Maps the switchControls method to the button on the JoyStick
 		reactor.onTriggered(joystick.getButton(7), () -> switchControls());
 
-		// Maps the buttons for the elevator control
-		reactor.onTriggered(joystick.getButton(9), () -> lift_elevator.setSpeed(0.5));
-		reactor.onUntriggered(joystick.getButton(9), () -> lift_elevator.stop());
-		// Moves elevator down
-		reactor.onTriggered(joystick.getButton(10), () -> lift_elevator.setSpeed(-0.5));
-		reactor.onUntriggered(joystick.getButton(10), () -> lift_elevator.stop());
+//		// Maps the buttons for the elevator control
+//		reactor.onTriggered(joystick.getButton(9), () -> lift_elevator.setSpeed(0.5));
+//		reactor.onUntriggered(joystick.getButton(9), () -> lift_elevator.stop());
+//		// Moves elevator down
+//		reactor.onTriggered(joystick.getButton(10), () -> lift_elevator.setSpeed(-0.5));
+//		reactor.onUntriggered(joystick.getButton(10), () -> lift_elevator.stop());
 
-		// Maps the buttons for the grabber control
-		reactor.onTriggered(joystick.getButton(3), () -> lift_pulley.setSpeed(0.5));
-		reactor.onUntriggered(joystick.getButton(3), () -> lift_pulley.stop());
-		// tilting arm down by reeling out pulley
-		reactor.onTriggered(joystick.getButton(4), () -> lift_pulley.setSpeed(-0.5));
-		reactor.onUntriggered(joystick.getButton(4), () -> lift_pulley.stop());
+//		// Maps the buttons for the grabber control
+//		reactor.onTriggered(joystick.getButton(3), () -> lift_pulley.setSpeed(0.5));
+//		reactor.onUntriggered(joystick.getButton(3), () -> lift_pulley.stop());
+//		// tilting arm down by reeling out pulley
+//		reactor.onTriggered(joystick.getButton(4), () -> lift_pulley.setSpeed(-0.5));
+//		reactor.onUntriggered(joystick.getButton(4), () -> lift_pulley.stop());
 
 		
 		//Either grabs or releases the box, depending on the state
-		reactor.onTriggered(joystick.getButton(1), () -> Strongback.submit(new PneumaticGrab(exDub)));
-		
-		//Returns the arm to its resting state, which depends on the state it just came from
-		reactor.onTriggered(joystick.getButton(2),
-				() -> Strongback.submit(new ArmReturn(lift_pulley, lift_elevator, exDub, c, 0, 0, 0, 0, false)));
+		reactor.onTriggered(joystick.getButton(1), () -> Strongback.submit(new ArmGrab(exDub)));
+		reactor.onTriggered(joystick.getButton(2), () -> Strongback.submit(new ArmRelease(exDub)));
 
 		//Puts the arm to the mid state
 		reactor.onTriggered(joystick.getButton(5), () -> {
-			Strongback.submit(new ArmCommand(lift_pulley, lift_elevator, exDub, c, .3, 1000, -.3, 500, false));
-			currentState = "mid";
-		});
+			Strongback.submit(new ArmCommand(robotState, "low", lift_pulley, lift_elevator));});
+		
+		reactor.onTriggered(joystick.getButton(3), () -> {
+			Strongback.submit(new ArmCommand(robotState, "mid", lift_pulley, lift_elevator));});
+		
+		reactor.onTriggered(joystick.getButton(6), () -> {
+			Strongback.submit(new ArmCommand(robotState, "high", lift_pulley, lift_elevator));});
+		
+		reactor.onTriggered(joystick.getButton(4), () -> {
+			Strongback.submit(new ArmCommand(robotState, "max", lift_pulley, lift_elevator));});
 
 		//Puts the arms to the high state
-		reactor.onTriggered(joystick.getButton(6), () -> {
-			Strongback.submit(new ArmCommand(lift_pulley, lift_elevator, exDub, c, .3, 2000, .3, 500, false));
-			currentState = "high";
-		});
+
 		
 		// Maps the Pneumatics controls to the buttons on the joystick
 		// reactor.onTriggered(joystick.getButton(1), () ->
@@ -208,15 +218,16 @@ public class Robot extends IterativeRobot {
 		 */
 		autoChooser = new SendableChooser();
 
-		autoChooser.addDefault("Drop Left", new LeftDrop(drive, gyro, exDub));
-		autoChooser.addObject("Drop Right", new RightDrop(drive, gyro, exDub));
-		autoChooser.addObject("Drop Middle", new MiddleDrop(drive, gyro, exDub));
+		autoChooser.addDefault("Drop Left", new LeftDrop(robotState, lift_pulley, lift_elevator, drive, gyro, exDub));
+		autoChooser.addObject("Drop Right", new RightDrop(robotState, lift_pulley, lift_elevator, drive, gyro, exDub));
+		autoChooser.addObject("Drop Middle", new MiddleDrop(robotState, lift_pulley, lift_elevator, drive, gyro, exDub));
 
 		autoChooser.addObject("Middle - don't drop", new MiddleCubeNone(drive, gyro));
 		autoChooser.addObject("Left - don't drop", new LeftCubeNone(drive, gyro));
 		autoChooser.addObject("Right - don't drop", new RightCubeNone(drive, gyro));
 
 		SmartDashboard.putData("Autonomous Mode Selector", autoChooser);
+		
 	}
 
 	/**
@@ -230,13 +241,23 @@ public class Robot extends IterativeRobot {
 
 		// Resets the Gyro to Zero degrees
 		gyro.reset();
-		gameData = DriverStation.getInstance().getGameSpecificMessage();
+		
+		// Tells the robot that we loaded a cube
 		isCarryingGlobal = true;
+		try {
+			gameData = DriverStation.getInstance().getGameSpecificMessage();
+			// Reads and submits (to the scheduler) the chose command from the
+			// SmartDhashboard
+			autonomousCommand = (Command) autoChooser.getSelected();
+			Strongback.submit(autonomousCommand);
+		}
+		catch(Exception e) {
+			System.out.println("\nCouldn't get data from the DriverStation - going straight\n");
+			Strongback.submit(new TimedDriveCommand(drive, gyro, .3, false, 3000));
+		}
 
-		// Reads and submits (to the scheduler) the chose command from the
-		// SmartDhashboard
-		autonomousCommand = (Command) autoChooser.getSelected();
-		Strongback.submit(autonomousCommand);
+
+		
 	}
 
 	/**
@@ -315,5 +336,6 @@ public class Robot extends IterativeRobot {
 		// Inverts the drive speed
 		driveSpeed = driveSpeed.invert();
 	}
+	
 
 }

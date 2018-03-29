@@ -4,18 +4,18 @@ import org.strongback.command.Command;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
-public class PneumaticRelease extends Command{
-
+public class ArmGrab extends Command{
+	boolean isCarrying;
 	DoubleSolenoid doubleSolenoid;
-	public PneumaticRelease(DoubleSolenoid doubleSolenoid){
+	public ArmGrab(DoubleSolenoid doubleSolenoid){
 		this.doubleSolenoid = doubleSolenoid;
 	}
 	
 	@Override
 	public boolean execute() {
 		// TODO Auto-generated method stub
-		doubleSolenoid.set(DoubleSolenoid.Value.kReverse);
-		return false;
+			doubleSolenoid.set(DoubleSolenoid.Value.kForward);
+		return true;
 	}
 	
 	@Override
