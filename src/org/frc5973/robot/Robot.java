@@ -45,10 +45,10 @@ import org.strongback.util.Values;
 
 /**
  * 
- * @author Sebastian Williams
- * Our main class for our robot. This class handles everything operation wise and is
- * run at the competition. This is the 'brain' of our robot and every other class
- * has to work through this one
+ * @author Sebastian Williams Our main class for our robot. This class handles
+ *         everything operation wise and is run at the competition. This is the
+ *         'brain' of our robot and every other class has to work through this
+ *         one
  *
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -56,7 +56,7 @@ public class Robot extends IterativeRobot {
 
 	// USB port for driver station
 	private static final int JOYSTICK_PORT = 0;// in driver station
-	//PWM ports on the roboRIO
+	// PWM ports on the roboRIO
 	private static final int RMOTOR_FRONT = 3;
 	private static final int RMOTOR_REAR = 2;
 	private static final int LMOTOR_FRONT = 0;
@@ -68,12 +68,12 @@ public class Robot extends IterativeRobot {
 	public static boolean isCarryingGlobal = false;
 	public static String currentState = "low";
 	public static String gameData;
-	
+
 	// Declares our Gryo using the GyroWrapper class wecreated
 	private GyroWrapper gyro;
-	
+
 	// Declares our sensors
-	//AnalogInput ultra = new AnalogInput(0);
+	// AnalogInput ultra = new AnalogInput(0);
 	AnalogInput actuator = new AnalogInput(1);
 
 	// Declares the TankDrive reference along with the ContinuousRange objects
@@ -83,13 +83,13 @@ public class Robot extends IterativeRobot {
 
 	// We moved this up here so we can output this variable in the teleop
 	protected ContinuousRange sensitivity;
-	
 
-	// Declares our Compressor and DoubleSolenoid for s 
+	// Declares our Compressor and DoubleSolenoid for s
 	private DoubleSolenoid exDub = new DoubleSolenoid(2, 3);
 	private Compressor c = new Compressor(0);
-	
-	//Making this motor an instance variable so our autonomous mode can access this as well
+
+	// Making this motor an instance variable so our autonomous mode can access this
+	// as well
 	private Motor lift_pulley;
 	private Motor lift_elevator;
 
@@ -98,52 +98,54 @@ public class Robot extends IterativeRobot {
 	private SendableChooser autoChooser;
 
 	/**
-	 * The initialization method for our robot which is called when we turn it on. 
-	 * This method instantiates all the variables we created above and performs
-	 * a few other, necessary startup functions.
+	 * The initialization method for our robot which is called when we turn it on.
+	 * This method instantiates all the variables we created above and performs a
+	 * few other, necessary startup functions.
+	 * 
 	 * @Override
 	 */
 	@Override
 	public void robotInit() {
-		
+
 		// Sets up a logging system through Strongback (not sure about this)
 		Strongback.configure().recordNoData().recordNoCommands().recordNoEvents().useExecutionPeriod(200,
 				TimeUnit.MILLISECONDS);
-		
+
 		// Sets up the two cameras, one facing forward and once facing backwards
 		UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture(0);
 		UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture(1);
-		camera1.setResolution(160,120);
-		camera2.setResolution(160,120);
-		
-		// Enables compressor and immediately activates the solenoid to grasp the power cube
+		camera1.setResolution(160, 120);
+		camera2.setResolution(160, 120);
+
+		// Enables compressor and immediately activates the solenoid to grasp the power
+		// cube
 		c.start();
 		c.setClosedLoopControl(true);
 		exDub.set(DoubleSolenoid.Value.kForward);
 
 		// Sets up the motors
 		Motor left_front = Hardware.Motors.victorSP(LMOTOR_FRONT).invert();
-		Motor left_rear = Hardware.Motors.victorSP(LMOTOR_REAR).invert(); 
+		Motor left_rear = Hardware.Motors.victorSP(LMOTOR_REAR).invert();
 		Motor right_front = Hardware.Motors.victorSP(RMOTOR_FRONT);
 		Motor right_rear = Hardware.Motors.victorSP(RMOTOR_REAR);
-		
+
 		// Sets up the motors for the elevator and the grabber
 		lift_elevator = Hardware.Motors.victorSP(LIFT_ELEVATOR);
 		lift_pulley = Hardware.Motors.victorSP(LIFT_PULLEY);
-		
+
 		// Instantiates the GyroScope using the GyroWrapper class we created
 		gyro = new GyroWrapper();
 
 		// Composes the motors, combing them into two sets
 		Motor left = Motor.compose(left_front, left_rear);
 		Motor right = Motor.compose(right_front, right_rear);
-		
+
 		// Sets up the TankDrive which is the main Drive we use
 		drive = new TankDrive(left, right);
-		
-		/* 
-		 * Set up the human input controls for teleoperated mode. We want to use the 
-		 * Logitech Attack 3D's throttle as a "sensitivity" input to scale the drive 
+
+		/*
+		 * Set up the human input controls for teleoperated mode. We want to use the
+		 * Logitech Attack 3D's throttle as a "sensitivity" input to scale the drive
 		 * speed and throttle, so we'll map it from it's native [-1,1] to a simple scale
 		 * factor of [0,1]
 		 */
@@ -156,63 +158,71 @@ public class Robot extends IterativeRobot {
 
 		// Maps the switchControls method to the button on the JoyStick
 		reactor.onTriggered(joystick.getButton(7), () -> switchControls());
-		
+
 		// Maps the buttons for the elevator control
 		reactor.onTriggered(joystick.getButton(9), () -> lift_elevator.setSpeed(0.5));
 		reactor.onUntriggered(joystick.getButton(9), () -> lift_elevator.stop());
-		//Moves elevator down
+		// Moves elevator down
 		reactor.onTriggered(joystick.getButton(10), () -> lift_elevator.setSpeed(-0.5));
 		reactor.onUntriggered(joystick.getButton(10), () -> lift_elevator.stop());
-		
+
 		// Maps the buttons for the grabber control
 		reactor.onTriggered(joystick.getButton(3), () -> lift_pulley.setSpeed(0.5));
 		reactor.onUntriggered(joystick.getButton(3), () -> lift_pulley.stop());
-		//tilting arm down by reeling out pulley
+		// tilting arm down by reeling out pulley
 		reactor.onTriggered(joystick.getButton(4), () -> lift_pulley.setSpeed(-0.5));
 		reactor.onUntriggered(joystick.getButton(4), () -> lift_pulley.stop());
-		
-		reactor.onTriggered(joystick.getButton(1), 
-				()->Strongback.submit(new PneumaticGrab(exDub, isCarryingGlobal)));
-		//low angle
-		//note that the arguments for this one are irrlevent; changing them wont do anything
-		reactor.onTriggered(joystick.getButton(2), 
-				()->Strongback.submit(new ArmReturn(lift_pulley, lift_elevator, exDub, c, 0, 0, 0, 0, false)));
-		
-		reactor.onTriggered(joystick.getButton(5), 
-				()->Strongback.submit(new ArmCommand(lift_pulley, lift_elevator, exDub, c, .3, 1000, -.3, 500, false)));
-		reactor.onTriggered(joystick.getButton(5), () -> currentState = "mid");
 
 		
+		//Either grabs or releases the box, depending on the state
+		reactor.onTriggered(joystick.getButton(1), () -> Strongback.submit(new PneumaticGrab(exDub)));
 		
-		reactor.onTriggered(joystick.getButton(6), 
-				()->Strongback.submit(new ArmCommand(lift_pulley, lift_elevator, exDub, c, .3, 2000, .3, 500, false)));
-		reactor.onTriggered(joystick.getButton(6), () -> currentState = "high");
+		//Returns the arm to its resting state, which depends on the state it just came from
+		reactor.onTriggered(joystick.getButton(2),
+				() -> Strongback.submit(new ArmReturn(lift_pulley, lift_elevator, exDub, c, 0, 0, 0, 0, false)));
+
+		//Puts the arm to the mid state
+		reactor.onTriggered(joystick.getButton(5), () -> {
+			Strongback.submit(new ArmCommand(lift_pulley, lift_elevator, exDub, c, .3, 1000, -.3, 500, false));
+			currentState = "mid";
+		});
+
+		//Puts the arms to the high state
+		reactor.onTriggered(joystick.getButton(6), () -> {
+			Strongback.submit(new ArmCommand(lift_pulley, lift_elevator, exDub, c, .3, 2000, .3, 500, false));
+			currentState = "high";
+		});
+		
 		// Maps the Pneumatics controls to the buttons on the joystick
-		//reactor.onTriggered(joystick.getButton(1), () -> exDub.set(DoubleSolenoid.Value.kOff));
-		//reactor.onTriggered(joystick.getButton(2), () -> exDub.set(DoubleSolenoid.Value.kForward));
-		//reactor.onUntriggered(joystick.getButton(2), () -> exDub.set(DoubleSolenoid.Value.kReverse));
+		// reactor.onTriggered(joystick.getButton(1), () ->
+		// exDub.set(DoubleSolenoid.Value.kOff));
+		// reactor.onTriggered(joystick.getButton(2), () ->
+		// exDub.set(DoubleSolenoid.Value.kForward));
+		// reactor.onUntriggered(joystick.getButton(2), () ->
+		// exDub.set(DoubleSolenoid.Value.kReverse));
 
 		/*
-		 * Sets up the autonomous mode chooser and lists the 9 possible options. 
-		 * We use ShuffleBoard to display the options and different data
-		 * streams for our robot. ShuffleBoard inherits from SmartDashboard
+		 * Sets up the autonomous mode chooser and lists the 9 possible options. We use
+		 * ShuffleBoard to display the options and different data streams for our robot.
+		 * ShuffleBoard inherits from SmartDashboard
 		 */
 		autoChooser = new SendableChooser();
-		
-		autoChooser.addDefault("Drop Left", new LeftDrop(drive, gyro));
-		autoChooser.addObject("Drop Right", new RightDrop(drive, gyro));
-		autoChooser.addObject("Drop Middle", new MiddleDrop(drive, gyro));
-		
+
+		autoChooser.addDefault("Drop Left", new LeftDrop(drive, gyro, exDub));
+		autoChooser.addObject("Drop Right", new RightDrop(drive, gyro, exDub));
+		autoChooser.addObject("Drop Middle", new MiddleDrop(drive, gyro, exDub));
+
 		autoChooser.addObject("Middle - don't drop", new MiddleCubeNone(drive, gyro));
 		autoChooser.addObject("Left - don't drop", new LeftCubeNone(drive, gyro));
 		autoChooser.addObject("Right - don't drop", new RightCubeNone(drive, gyro));
-		 
+
 		SmartDashboard.putData("Autonomous Mode Selector", autoChooser);
 	}
 
 	/**
-	 * This method is called at the beginning of autonomous mode and setups up the robot
-	 * for the period. It also contains the logic to read from the SmartDashabord
+	 * This method is called at the beginning of autonomous mode and setups up the
+	 * robot for the period. It also contains the logic to read from the
+	 * SmartDashabord
 	 */
 	public void autonomousInit() {
 		// Start Strongback functions ...
@@ -221,8 +231,10 @@ public class Robot extends IterativeRobot {
 		// Resets the Gyro to Zero degrees
 		gyro.reset();
 		gameData = DriverStation.getInstance().getGameSpecificMessage();
-		
-		// Reads and submits (to the scheduler) the chose command from the SmartDhashboard
+		isCarryingGlobal = true;
+
+		// Reads and submits (to the scheduler) the chose command from the
+		// SmartDhashboard
 		autonomousCommand = (Command) autoChooser.getSelected();
 		Strongback.submit(autonomousCommand);
 	}
@@ -230,71 +242,78 @@ public class Robot extends IterativeRobot {
 	/**
 	 * We used to use this for our autonomous logic but we use the Strongback
 	 * scheduler instead
+	 * 
 	 * @deprecated
 	 */
-	
+
 	public void autonomousPeriodic() {
-		
+
 	}
 
 	/**
-	 * This method is called at the beginning of autonomous mode and sets up the 
+	 * This method is called at the beginning of autonomous mode and sets up the
 	 * robot for the period.
+	 * 
 	 * @Override
 	 */
 	@Override
 	public void teleopInit() {
-		
+
 		// Kill any commands that might be lefotover from autonomous
 		Strongback.disable();
-		
+
 		// Restart Strongback functions
 		Strongback.start();
-		
-		// Uses the built in features to regulate pressure in the Compressor (not sure about this)
+
+		// Uses the built in features to regulate pressure in the Compressor (not sure
+		// about this)
 		c.setClosedLoopControl(true);
 
 	}
 
 	/**
-	 * This method is called many times a second during teleop and reads from the joystick
-	 * to determine where and how fast the robot should go.
+	 * This method is called many times a second during teleop and reads from the
+	 * joystick to determine where and how fast the robot should go.
+	 * 
 	 * @Override
 	 */
 	@Override
 	public void teleopPeriodic() {
-		
-		// Reads how fast and if the robot should turn and passes that to the drive.arcade method
+
+		// Reads how fast and if the robot should turn and passes that to the
+		// drive.arcade method
 		drive.arcade(driveSpeed.read(), turnSpeed.read());
-		
+
 		// Sets up our ultrasonic sensor
-		// SmartDashboard.putNumber("Ultra Distance Reading", ultra.getVoltage()/0.00097);
-		
+		// SmartDashboard.putNumber("Ultra Distance Reading",
+		// ultra.getVoltage()/0.00097);
+
 	}
 
 	/**
 	 * This method is called when the robot is done and flushes anything no longer
 	 * needed
+	 * 
 	 * @Override
 	 */
 	@Override
 	public void disabledInit() {
-		
+
 		// Tell Strongback that the robot is disabled so it can flush and kill commands
 		Strongback.disable();
-		
+
 		// Stops the compressor
 		c.setClosedLoopControl(false);
 	}
 
 	/**
-	 * This method allows the user (through the joystick) to change the direction for
-	 * what forward and backwards is
+	 * This method allows the user (through the joystick) to change the direction
+	 * for what forward and backwards is
 	 */
 	public void switchControls() {
-		
+
 		// Inverts the drive speed
 		driveSpeed = driveSpeed.invert();
 	}
-		
+
 }

@@ -5,19 +5,22 @@ import org.strongback.command.CommandGroup;
 import org.strongback.drive.TankDrive;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class RightDrop extends CommandGroup {
-	public RightDrop(TankDrive drive, GyroWrapper gyro) {
+	public RightDrop(TankDrive drive, GyroWrapper gyro, DoubleSolenoid exDub) {
 		//drop right
 		String gameData;
 		gameData = DriverStation.getInstance().getGameSpecificMessage();
 		if(gameData.length() > 0) {
 			if(gameData.charAt(0) == 'R') {
-				sequentially(new RightCubeRight(drive, gyro));
+				sequentially(new RightCubeRight(drive, gyro),
+						new PneumaticGrab(exDub));
 			}
 			else if(gameData.charAt(0) == 'L') {
-				sequentially(new RightCubeLeft(drive, gyro));
+				sequentially(new RightCubeLeft(drive, gyro),
+						new PneumaticGrab(exDub));
 			}
 		}
 		
