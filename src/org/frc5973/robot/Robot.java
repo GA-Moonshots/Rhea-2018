@@ -280,13 +280,13 @@ public class Robot extends IterativeRobot {
 
 		autoChooser = new SendableChooser();
 
-		autoChooser.addDefault("Drop Left", "Drop Left");
-		autoChooser.addObject("Drop Right", "Drop Right");
-		autoChooser.addObject("Drop Middle", "Drop Middle");
+		autoChooser.addDefault("Drop Left", new DumbCommand("Drop Left"));
+		autoChooser.addObject("Drop Right", new DumbCommand("Drop Right"));
+		autoChooser.addObject("Drop Middle", new DumbCommand("Drop Middle"));
 
-		autoChooser.addObject("Middle - don't drop", "Middle - don't drop");
-		autoChooser.addObject("Left - don't drop", "Left - don't drop");
-		autoChooser.addObject("Right - don't drop", "Right - don't drop");
+		autoChooser.addObject("Middle - don't drop", new DumbCommand("Middle - don't drop"));
+		autoChooser.addObject("Left - don't drop", new DumbCommand("Left - don't drop"));
+		autoChooser.addObject("Right - don't drop", new DumbCommand("Right - don't drop"));
 
 		SmartDashboard.putData("Autonomous Mode Selector", autoChooser);
 		
@@ -302,24 +302,24 @@ public class Robot extends IterativeRobot {
 		Strongback.start();
 		c.start();
 		c.setClosedLoopControl(true);
-		
+		DumbCommand dc = (DumbCommand)autoChooser.getSelected();
 		String gameData = DriverStation.getInstance().getGameSpecificMessage();
-		if(autoChooser.getSelected().equals("Drop Left")) {
+		if(dc.getMessage().equals("Drop Left")) {
 			Strongback.submit(new LeftDrop(gameData, lift_pulley, lift_elevator, drive, gyro, exDub));
 		}
-		else if(autoChooser.getSelected().equals("Drop Right")) {
+		else if(dc.getMessage().equals("Drop Right")) {
 			Strongback.submit(new RightDrop(gameData, lift_pulley, lift_elevator, drive, gyro, exDub));
 		}
-		else if(autoChooser.getSelected().equals("Drop Middle")) {
+		else if(dc.getMessage().equals("Drop Middle")) {
 			Strongback.submit(new MiddleDrop(gameData, lift_pulley, lift_elevator, drive, gyro, exDub));
 		}
-		else if(autoChooser.getSelected().equals("Middle - don't drop")) {
+		else if(dc.getMessage().equals("Middle - don't drop")) {
 			Strongback.submit(new MiddleCubeNone(drive, gyro));
 		}
-		else if(autoChooser.getSelected().equals("Left - don't drop")) {
+		else if(dc.getMessage().equals("Left - don't drop")) {
 			Strongback.submit(new LeftCubeNone(drive, gyro));
 		}
-		else if(autoChooser.getSelected().equals("Right - don't drop")) {
+		else if(dc.getMessage().equals("Right - don't drop")) {
 			Strongback.submit(new RightCubeNone(drive, gyro));
 		}
 		//realGameData.setGameData(DriverStation.getInstance().getGameSpecificMessage());
