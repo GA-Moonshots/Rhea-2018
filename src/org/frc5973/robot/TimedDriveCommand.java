@@ -64,7 +64,7 @@ public class TimedDriveCommand extends Command {
 	public boolean execute() {
 		gyro.reset();
 		while (currentCheck < totalChecks) {
-			drive.arcade(driveSpeed, -gyro.getRawAngle()*.03, squareInputs);
+			drive.arcade(-driveSpeed, -gyro.getRawAngle()*.03, squareInputs);
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException e) {

@@ -140,6 +140,7 @@ public class Robot extends IterativeRobot {
 		// cube
 		c.start();
 		c.setClosedLoopControl(true);
+		
 		exDub.set(DoubleSolenoid.Value.kForward);
 
 		// Sets up the motors
@@ -167,8 +168,6 @@ public class Robot extends IterativeRobot {
 		drive = new TankDrive(left, right);
 
 		
-		CustomRobotState customRobotState = new CustomRobotState(initialLiftTime, initialTiltTime);
-
 		/*
 		 * Set up the human input controls for teleoperated mode. We want to use the
 		 * Logitech Attack 3D's throttle as a "sensitivity" input to scale the drive
@@ -186,22 +185,22 @@ public class Robot extends IterativeRobot {
 		reactor.onTriggered(joystick.getButton(7), () -> switchControls());
 		
 		reactor.onTriggered(joystick.getButton(5), () -> 
-		lift_elevator.setSpeed(.3));
+		lift_elevator.setSpeed(.85));
 		reactor.onUntriggered(joystick.getButton(5), () -> 
 		lift_elevator.stop());
 
 		reactor.onTriggered(joystick.getButton(3), () -> 
-		lift_elevator.setSpeed(-.3));
+		lift_elevator.setSpeed(-.85));
 		reactor.onUntriggered(joystick.getButton(3), () -> 
 		lift_elevator.stop());
 		
 		reactor.onTriggered(joystick.getButton(4), () -> 
-		lift_pulley.setSpeed(-.3));
+		lift_pulley.setSpeed(-.85));
 		reactor.onUntriggered(joystick.getButton(4), () -> 
 		lift_pulley.stop());
 
 		reactor.onTriggered(joystick.getButton(6), () -> 
-		lift_pulley.setSpeed(.3));
+		lift_pulley.setSpeed(.85));
 		reactor.onUntriggered(joystick.getButton(6), () -> 
 		lift_pulley.stop());
 
@@ -222,12 +221,11 @@ public class Robot extends IterativeRobot {
 		reactor.onTriggered(joystick.getButton(9), () -> {
 			lift_pulley.setSpeed(.3);
 			try {
-				Thread.sleep(tinyTiltTime);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				System.out.println("Error here");
 				e.printStackTrace();
 			}
-			customRobotState.setCurrentTiltTime(customRobotState.getCurrentTiltTime()+tinyTiltTime);
 			lift_pulley.stop();
 
 		});
@@ -236,12 +234,11 @@ public class Robot extends IterativeRobot {
 		reactor.onTriggered(joystick.getButton(10), () -> {
 			lift_pulley.setSpeed(-.3);
 			try {
-				Thread.sleep(tinyTiltTime);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				System.out.println("Error here");
 				e.printStackTrace();
 			}
-			customRobotState.setCurrentTiltTime(customRobotState.getCurrentTiltTime()+tinyTiltTime);
 			lift_pulley.stop();
 
 		});
@@ -282,9 +279,9 @@ public class Robot extends IterativeRobot {
 		 */
 		autoChooser = new SendableChooser();
 
-		autoChooser.addDefault("Drop Left", new LeftDrop(customRobotState, lift_pulley, lift_elevator, drive, gyro, exDub));
-		autoChooser.addObject("Drop Right", new RightDrop(customRobotState, lift_pulley, lift_elevator, drive, gyro, exDub));
-		autoChooser.addObject("Drop Middle", new MiddleDrop(customRobotState, lift_pulley, lift_elevator, drive, gyro, exDub));
+		autoChooser.addDefault("Drop Left", new LeftDrop(lift_pulley, lift_elevator, drive, gyro, exDub));
+		autoChooser.addObject("Drop Right", new RightDrop(lift_pulley, lift_elevator, drive, gyro, exDub));
+		autoChooser.addObject("Drop Middle", new MiddleDrop(lift_pulley, lift_elevator, drive, gyro, exDub));
 
 		autoChooser.addObject("Middle - don't drop", new MiddleCubeNone(drive, gyro));
 		autoChooser.addObject("Left - don't drop", new LeftCubeNone(drive, gyro));
@@ -302,6 +299,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		// Start Strongback functions ...
 		Strongback.start();
+		c.setClosedLoopControl(true);
 
 		// Resets the Gyro to Zero degrees
 		gyro.reset();
@@ -346,13 +344,12 @@ public class Robot extends IterativeRobot {
 
 		// Kill any commands that might be lefotover from autonomous
 		Strongback.disable();
-
+		c.setClosedLoopControl(true);
 		// Restart Strongback functions
 		Strongback.start();
 
 		// Uses the built in features to regulate pressure in the Compressor (not sure
 		// about this)
-		c.setClosedLoopControl(true);
 
 	}
 

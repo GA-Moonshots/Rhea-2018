@@ -17,7 +17,6 @@ package org.frc5973.robot;
 
 import org.strongback.command.Command;
 import org.strongback.components.Motor;
-import org.frc5973.robot.CustomRobotState;
 
 /**
  * The command that drives the robot at a constant forward and turn speed for a
@@ -30,17 +29,6 @@ public class ArmCommand extends Command {
 	// as well
 	private Motor lift_pulley;
 	private Motor lift_elevator;
-
-	private String requestedState;
-	private int currentTiltTime;
-	private int currentLiftTime;
-	private int tiltTime;
-	private int liftTime;
-	private int liftScalar;
-	private int tiltScalar;
-	private CustomRobotState state;
-	private final double tiltSpeed = .3;
-	private final double liftSpeed = .6;
 
 	/**
 	 * Create a new autonomous command.
@@ -56,136 +44,24 @@ public class ArmCommand extends Command {
 	 * @param duration
 	 *            the duration of this command; should be positive
 	 */
-	public ArmCommand(CustomRobotState customRobotState, String requestedState, Motor lift_pulley,
+	public ArmCommand(Motor lift_pulley,
 			Motor lift_elevator) {
 		this.lift_pulley = lift_pulley;
 		this.lift_elevator = lift_elevator;
-		this.currentTiltTime = customRobotState.getCurrentTiltTime();
-		this.currentLiftTime = customRobotState.getCurrentLiftTime();
-		this.requestedState = requestedState;
-		this.liftScalar = 1;
-		this.tiltScalar = 1;
-		this.state = customRobotState;
 	}
 
 	@Override
 	public boolean execute() {
-		System.out.println("Test");
-		if (requestedState.equals("low")) {
-			liftTime = 0 - currentLiftTime;
-			if (liftTime < 0) {
-				liftScalar = -1;
-			}
 
-			tiltTime = 0 - currentTiltTime;
-			if (tiltTime < 0) {
-				tiltScalar = -1;
-			}
-		
-
-		} else if (requestedState.equals("mid")) {
-			liftTime = 10000 - currentLiftTime;
-			if (liftTime < 0) {
-				liftScalar = -1;
-			}
-
-			tiltTime = 2500 - currentTiltTime;
-			if (tiltTime < 0) {
-				tiltScalar = -1;
-			}
-		}
-
-		else if (requestedState.equals("high")) {
-			liftTime = 19500 - currentLiftTime;
-			if (liftTime < 0) {
-				liftScalar = -1;
-			}
-
-			tiltTime = 5000 - currentTiltTime;
-			if (tiltTime < 0) {
-				tiltScalar = -1;
-			}
-		}
-
-		lift_pulley.setSpeed(tiltScalar*tiltSpeed);
+		lift_pulley.setSpeed(-.85);
 		try {
-			Thread.sleep(Math.abs(tiltTime));
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			System.out.println("Error here");
 			e.printStackTrace();
 		}
-		lift_pulley.stop();
-
-		lift_elevator.setSpeed(liftScalar*liftSpeed);
-		try {
-			Thread.sleep(Math.abs(liftTime));
-		} catch (InterruptedException e) {
-			System.out.println("Error here");
-			e.printStackTrace();
-		}
-		lift_elevator.stop();
-//
-////thats fine
-		state.setCurrentLiftTime(liftTime);
-		state.setCurrentTiltTime(tiltTime);
-//		
-		
+		lift_pulley.stop();			
 		return true;
-		// if(Robot.currentState.equals("low")) {
-		// if (lift_time > 0){
-		// lift_elevator.setSpeed(lift_speed);
-		// try {
-		// Thread.sleep(lift_time);
-		// } catch (InterruptedException e) {
-		// System.out.println("Error here");
-		// e.printStackTrace();
-		// }
-		// lift_elevator.stop();
-		// }
-		//
-		// if (tilt_time > 0){
-		// lift_pulley.setSpeed(tilt_speed);
-		// try {
-		// Thread.sleep(tilt_time);
-		// } catch (InterruptedException e) {
-		// System.out.println("Error here");
-		// e.printStackTrace();
-		// }
-		// lift_pulley.stop();
-		// }
-		//
-		// return true;
-		//
-		// }
-		//
-		// else {
-		// Strongback.submit(new ArmReturn(lift_pulley, lift_elevator, exDub, c, 0, 0,
-		// 0, 0, false));
-		//
-		// if (lift_time > 0){
-		// lift_elevator.setSpeed(lift_speed);
-		// try {
-		// Thread.sleep(lift_time);
-		// } catch (InterruptedException e) {
-		// System.out.println("Error here");
-		// e.printStackTrace();
-		// }
-		// lift_elevator.stop();
-		// }
-		//
-		// if (tilt_time > 0){
-		// lift_pulley.setSpeed(tilt_speed);
-		// try {
-		// Thread.sleep(tilt_time);
-		// } catch (InterruptedException e) {
-		// System.out.println("Error here");
-		// e.printStackTrace();
-		// }
-		// lift_pulley.stop();
-		// }
-		//
-		// return true;
-		// }
 
 	}
 

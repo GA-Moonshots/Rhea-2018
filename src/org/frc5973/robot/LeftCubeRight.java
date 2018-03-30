@@ -7,11 +7,11 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 
 public class LeftCubeRight extends CommandGroup {
 	public LeftCubeRight(TankDrive drive, GyroWrapper gyro) {
-		sequentially(new TimedDriveCommand(drive, gyro, .3, false, 2000),
+		sequentially(new TimedDriveCommand(drive, gyro, .3, false, 7000),
 				new AngularTurnCommand(drive, gyro, .2, false, 90), 
-				new TimedDriveCommand(drive, gyro, .3, false, 3500),
+				new TimedDriveCommand(drive, gyro, .3, false, 7000),
 				new AngularTurnCommand(drive, gyro, .2, false, -90),
-				new TimedDriveCommand(drive, gyro, .3, false, 2500), 
+				new TimedDriveCommand(drive, gyro, .3, false, 1800), 
 				new AngularTurnCommand(drive, gyro, .2, false, -90),
 				new TimedDriveCommand(drive, gyro, .2, false, 1000));
 	}
