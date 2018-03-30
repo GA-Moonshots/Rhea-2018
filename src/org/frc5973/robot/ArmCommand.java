@@ -55,7 +55,7 @@ public class ArmCommand extends Command {
 
 		lift_pulley.setSpeed(-.85);
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(1200);
 		} catch (InterruptedException e) {
 			System.out.println("Error here");
 			e.printStackTrace();

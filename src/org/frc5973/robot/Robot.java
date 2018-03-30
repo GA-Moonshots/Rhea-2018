@@ -100,7 +100,6 @@ public class Robot extends IterativeRobot {
 	private Command autonomousCommand;
 	private SendableChooser autoChooser;
 	
-	private GameDataState gameData;
 	/**
 	 * The initialization method for our robot which is called when we turn it on.
 	 * This method instantiates all the variables we created above and performs a
@@ -112,8 +111,6 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 			// Reads and submits (to the scheduler) the chose command from the
 			// SmartDhashboard
-
-		gameData = new GameDataState();
 		
 		// Sets up a logging system through Strongback (not sure about this)
 		Strongback.configure().recordNoData().recordNoCommands().recordNoEvents().useExecutionPeriod(200,
@@ -302,35 +299,35 @@ public class Robot extends IterativeRobot {
 		Strongback.start();
 		c.start();
 		c.setClosedLoopControl(true);
+		gyro.reset();
+		
+		System.out.println(gyro.getAngle());
 		DumbCommand dc = (DumbCommand)autoChooser.getSelected();
 		String gameData = DriverStation.getInstance().getGameSpecificMessage();
+		
 		if(dc.getMessage().equals("Drop Left")) {
 			Strongback.submit(new LeftDrop(gameData, lift_pulley, lift_elevator, drive, gyro, exDub));
 		}
+		
 		else if(dc.getMessage().equals("Drop Right")) {
 			Strongback.submit(new RightDrop(gameData, lift_pulley, lift_elevator, drive, gyro, exDub));
 		}
+		
 		else if(dc.getMessage().equals("Drop Middle")) {
 			Strongback.submit(new MiddleDrop(gameData, lift_pulley, lift_elevator, drive, gyro, exDub));
 		}
+		
 		else if(dc.getMessage().equals("Middle - don't drop")) {
 			Strongback.submit(new MiddleCubeNone(drive, gyro));
 		}
+		
 		else if(dc.getMessage().equals("Left - don't drop")) {
 			Strongback.submit(new LeftCubeNone(drive, gyro));
 		}
+		
 		else if(dc.getMessage().equals("Right - don't drop")) {
 			Strongback.submit(new RightCubeNone(drive, gyro));
 		}
-		//realGameData.setGameData(DriverStation.getInstance().getGameSpecificMessage());
-		
-		// Resets the Gyro to Zero degrees
-		gyro.reset();
-		System.out.println(gyro.getAngle());
-		
-		//Submits the chosen auto mode
-		autonomousCommand = (Command) autoChooser.getSelected();
-		Strongback.submit(autonomousCommand);
 	
 	}
 
