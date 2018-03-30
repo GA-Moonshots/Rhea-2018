@@ -10,14 +10,14 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class RightDrop extends CommandGroup {
-	public RightDrop(GameDataState realGameData, Motor lift_pulley, Motor life_elevator, TankDrive drive, GyroWrapper gyro, DoubleSolenoid exDub) {
+	private GameDataState data;
+	public RightDrop(String data, Motor lift_pulley, Motor life_elevator, TankDrive drive, GyroWrapper gyro, DoubleSolenoid exDub) {
 		// drop right
-		String game = realGameData.getGameData();
-		if (realGameData.getGameData().length() > 0) {
-			if (realGameData.getGameData().charAt(0) == 'R') {
+		if (data.length() > 0) {
+			if (data.charAt(0) == 'R') {
 				sequentially(new RightCubeRight(drive, gyro), new ArmCommand(lift_pulley, life_elevator),
 						new ArmRelease(exDub));
-			} else if (realGameData.getGameData().charAt(0) == 'L') {
+			} else if (data.charAt(0) == 'L') {
 				sequentially(new RightCubeLeft(drive, gyro), new ArmCommand(lift_pulley, life_elevator),
 						new ArmRelease(exDub));
 			}
@@ -26,6 +26,10 @@ public class RightDrop extends CommandGroup {
 		}
 		System.out.println("Right is Created");
 		
+	}
+	
+	public void setData(String newData) {
+		data.setGameData(newData);
 	}
 }
 

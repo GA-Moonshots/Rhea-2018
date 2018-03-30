@@ -74,7 +74,6 @@ public class Robot extends IterativeRobot {
 
 	// Declares our Gryo using the GyroWrapper class wecreated
 	private GyroWrapper gyro;
-	public static robotGameData = "QQQ";
 
 	// Declares our sensors
 	// AnalogInput ultra = new AnalogInput(0);
@@ -101,7 +100,7 @@ public class Robot extends IterativeRobot {
 	private Command autonomousCommand;
 	private SendableChooser autoChooser;
 	
-	private GameDataState realGameData;
+	private GameDataState gameData;
 	/**
 	 * The initialization method for our robot which is called when we turn it on.
 	 * This method instantiates all the variables we created above and performs a
@@ -114,6 +113,7 @@ public class Robot extends IterativeRobot {
 			// Reads and submits (to the scheduler) the chose command from the
 			// SmartDhashboard
 
+		gameData = new GameDataState();
 		
 		// Sets up a logging system through Strongback (not sure about this)
 		Strongback.configure().recordNoData().recordNoCommands().recordNoEvents().useExecutionPeriod(200,
@@ -174,23 +174,33 @@ public class Robot extends IterativeRobot {
 		reactor.onTriggered(joystick.getButton(7), () -> switchControls());
 		
 		reactor.onTriggered(joystick.getButton(5), () -> 
-		lift_elevator.setSpeed(.85));
+		lift_elevator.setSpeed(1));
 		reactor.onUntriggered(joystick.getButton(5), () -> 
 		lift_elevator.stop());
 
 		reactor.onTriggered(joystick.getButton(3), () -> 
-		lift_elevator.setSpeed(-.85));
+		lift_elevator.setSpeed(-1));
 		reactor.onUntriggered(joystick.getButton(3), () -> 
 		lift_elevator.stop());
 		
 		reactor.onTriggered(joystick.getButton(4), () -> 
-		lift_pulley.setSpeed(-.85));
+		lift_pulley.setSpeed(-1));
 		reactor.onUntriggered(joystick.getButton(4), () -> 
 		lift_pulley.stop());
 
 		reactor.onTriggered(joystick.getButton(6), () -> 
-		lift_pulley.setSpeed(.85));
+		lift_pulley.setSpeed(1));
 		reactor.onUntriggered(joystick.getButton(6), () -> 
+		lift_pulley.stop());
+		
+		reactor.onTriggered(joystick.getButton(11), () -> 
+		lift_pulley.setSpeed(-.5));
+		reactor.onUntriggered(joystick.getButton(11), () -> 
+		lift_pulley.stop());
+
+		reactor.onTriggered(joystick.getButton(12), () -> 
+		lift_pulley.setSpeed(.5));
+		reactor.onUntriggered(joystick.getButton(12), () -> 
 		lift_pulley.stop());
 
 	
@@ -266,18 +276,17 @@ public class Robot extends IterativeRobot {
 		 * ShuffleBoard to display the options and different data streams for our robot.
 		 * ShuffleBoard inherits from SmartDashboard
 		 */
-		realGameData = new GameDataState();
 		
 
 		autoChooser = new SendableChooser();
 
-		autoChooser.addDefault("Drop Left", new LeftDrop(realGameData, lift_pulley, lift_elevator, drive, gyro, exDub));
-		autoChooser.addObject("Drop Right", new RightDrop(realGameData, lift_pulley, lift_elevator, drive, gyro, exDub));
-		autoChooser.addObject("Drop Middle", new MiddleDrop(realGameData, lift_pulley, lift_elevator, drive, gyro, exDub));
+		autoChooser.addDefault("Drop Left", "Drop Left");
+		autoChooser.addObject("Drop Right", "Drop Right");
+		autoChooser.addObject("Drop Middle", "Drop Middle");
 
-		autoChooser.addObject("Middle - don't drop", new MiddleCubeNone(drive, gyro));
-		autoChooser.addObject("Left - don't drop", new LeftCubeNone(drive, gyro));
-		autoChooser.addObject("Right - don't drop", new RightCubeNone(drive, gyro));
+		autoChooser.addObject("Middle - don't drop", "Middle - don't drop");
+		autoChooser.addObject("Left - don't drop", "Left - don't drop");
+		autoChooser.addObject("Right - don't drop", "Right - don't drop");
 
 		SmartDashboard.putData("Autonomous Mode Selector", autoChooser);
 		
@@ -294,7 +303,26 @@ public class Robot extends IterativeRobot {
 		c.start();
 		c.setClosedLoopControl(true);
 		
-		realGameData.setGameData(DriverStation.getInstance().getGameSpecificMessage());
+		String gameData = DriverStation.getInstance().getGameSpecificMessage();
+		if(autoChooser.getSelected().equals("Drop Left")) {
+			Strongback.submit(new LeftDrop(gameData, lift_pulley, lift_elevator, drive, gyro, exDub));
+		}
+		else if(autoChooser.getSelected().equals("Drop Right")) {
+			Strongback.submit(new RightDrop(gameData, lift_pulley, lift_elevator, drive, gyro, exDub));
+		}
+		else if(autoChooser.getSelected().equals("Drop Middle")) {
+			Strongback.submit(new MiddleDrop(gameData, lift_pulley, lift_elevator, drive, gyro, exDub));
+		}
+		else if(autoChooser.getSelected().equals("Middle - don't drop")) {
+			Strongback.submit(new MiddleCubeNone(drive, gyro));
+		}
+		else if(autoChooser.getSelected().equals("Left - don't drop")) {
+			Strongback.submit(new LeftCubeNone(drive, gyro));
+		}
+		else if(autoChooser.getSelected().equals("Right - don't drop")) {
+			Strongback.submit(new RightCubeNone(drive, gyro));
+		}
+		//realGameData.setGameData(DriverStation.getInstance().getGameSpecificMessage());
 		
 		// Resets the Gyro to Zero degrees
 		gyro.reset();

@@ -10,13 +10,13 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class MiddleDrop extends CommandGroup {
-	public MiddleDrop(GameDataState realGameData, Motor lift_pulley, Motor life_elevator, TankDrive drive, GyroWrapper gyro, DoubleSolenoid exDub) {
+	public MiddleDrop(String gameData, Motor lift_pulley, Motor life_elevator, TankDrive drive, GyroWrapper gyro, DoubleSolenoid exDub) {
 		// drop right
-		if (realGameData.getGameData().length() > 0) {
-			if (realGameData.getGameData().charAt(0) == 'R') {
+		if (gameData.length() > 0) {
+			if (gameData.charAt(0) == 'R') {
 				sequentially(new MiddleCubeRight(drive, gyro), new ArmCommand(lift_pulley, life_elevator),
 						new ArmRelease(exDub));
-			} else if (realGameData.getGameData().charAt(0) == 'L') {
+			} else if (gameData.charAt(0) == 'L') {
 				sequentially(new MiddleCubeLeft(drive, gyro), new ArmCommand(lift_pulley, life_elevator),
 						new ArmRelease(exDub));
 			}
