@@ -69,8 +69,6 @@ public class Robot extends IterativeRobot {
 //	private static final int WINCH_PORT = 6;
 //	private static final int WINCH2_PORT = 8;
 
-	public static boolean isCarryingGlobal = false;
-	public static String currentState = "low";
 	public static String gameData;
 	
 	
@@ -103,10 +101,6 @@ public class Robot extends IterativeRobot {
 	private Command autonomousCommand;
 	private SendableChooser autoChooser;
 	
-	private final int initialLiftTime = 0;
-	private final int initialTiltTime = 1000;
-	private final int tinyTiltTime = 500;
-
 
 	/**
 	 * The initialization method for our robot which is called when we turn it on.
@@ -117,15 +111,10 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		try {
-			gameData = DriverStation.getInstance().getGameSpecificMessage();
 			// Reads and submits (to the scheduler) the chose command from the
 			// SmartDhashboard
-		}
-		catch(Exception e) {
-			System.out.println("\nCouldn't get data from the DriverStation - going straight\n");
-			gameData = "QQQ";
-		}
+
+
 		// Sets up a logging system through Strongback (not sure about this)
 		Strongback.configure().recordNoData().recordNoCommands().recordNoEvents().useExecutionPeriod(200,
 				TimeUnit.MILLISECONDS);
@@ -300,26 +289,17 @@ public class Robot extends IterativeRobot {
 		// Start Strongback functions ...
 		Strongback.start();
 		c.setClosedLoopControl(true);
+		gameData = DriverStation.getInstance().getGameSpecificMessage();
+
 
 		// Resets the Gyro to Zero degrees
 		gyro.reset();
+		System.out.println(gyro.getAngle());
 		
-		// Tells the robot that we loaded a cube
-		isCarryingGlobal = true;
-		try {
-//			gameData = DriverStation.getInstance().getGameSpecificMessage();
-			// Reads and submits (to the scheduler) the chose command from the
-			// SmartDhashboard
-			autonomousCommand = (Command) autoChooser.getSelected();
-			Strongback.submit(autonomousCommand);
-		}
-		catch(Exception e) {
-			System.out.println("\nCouldn't get data from the DriverStation - going straight\n");
-			Strongback.submit(new TimedDriveCommand(drive, gyro, .3, false, 3000));
-		}
-
-
-		
+		//Submits the chosen auto mode
+		autonomousCommand = (Command) autoChooser.getSelected();
+		Strongback.submit(autonomousCommand);
+	
 	}
 
 	/**

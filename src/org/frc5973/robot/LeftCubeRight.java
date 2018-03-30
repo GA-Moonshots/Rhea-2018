@@ -10,9 +10,9 @@ public class LeftCubeRight extends CommandGroup {
 		sequentially(new TimedDriveCommand(drive, gyro, .3, false, 7000),
 				new AngularTurnCommand(drive, gyro, .2, false, 90), 
 				new TimedDriveCommand(drive, gyro, .3, false, 7000),
-				new AngularTurnCommand(drive, gyro, .2, false, -90),
+				new AngularTurnCommand(drive, gyro, .2, false, 90),
 				new TimedDriveCommand(drive, gyro, .3, false, 1800), 
-				new AngularTurnCommand(drive, gyro, .2, false, -90),
+				new AngularTurnCommand(drive, gyro, .2, false, 90),
 				new TimedDriveCommand(drive, gyro, .2, false, 1000));
 	}
 

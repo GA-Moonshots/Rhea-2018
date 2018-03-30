@@ -9,9 +9,10 @@ public class MiddleCubeRight extends CommandGroup {
 	public MiddleCubeRight(TankDrive drive, GyroWrapper gyro) {
 		sequentially(new TimedDriveCommand(drive, gyro, .3, false, 1500),
 				new AngularTurnCommand(drive, gyro, .2, false, 90), 
-				new TimedDriveCommand(drive, gyro, .3, false, 1500),
+				new TimedDriveCommand(drive, gyro, .3, false, 3000),
 				new AngularTurnCommand(drive, gyro, .2, false, -90),
-				new TimedDriveCommand(drive, gyro, .3, false, 3000), 
+				new TimedDriveCommand(drive, gyro, .3, false, 5000), 
+				new AngularTurnCommand(drive, gyro, .2, false, -90),
 				new AngularTurnCommand(drive, gyro, .2, false, -90),
 				new TimedDriveCommand(drive, gyro, .2, false, 1000));
 	}
