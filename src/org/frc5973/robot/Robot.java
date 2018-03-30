@@ -69,7 +69,7 @@ public class Robot extends IterativeRobot {
 //	private static final int WINCH_PORT = 6;
 //	private static final int WINCH2_PORT = 8;
 
-	public static String gameData;
+	public static String gameData = DriverStation.getInstance().getGameSpecificMessage();
 	
 	
 
