@@ -69,12 +69,12 @@ public class Robot extends IterativeRobot {
 //	private static final int WINCH_PORT = 6;
 //	private static final int WINCH2_PORT = 8;
 
-	public static String gameData = DriverStation.getInstance().getGameSpecificMessage();
 	
 	
 
 	// Declares our Gryo using the GyroWrapper class wecreated
 	private GyroWrapper gyro;
+	public static robotGameData = "QQQ";
 
 	// Declares our sensors
 	// AnalogInput ultra = new AnalogInput(0);
@@ -101,7 +101,7 @@ public class Robot extends IterativeRobot {
 	private Command autonomousCommand;
 	private SendableChooser autoChooser;
 	
-
+	private GameDataState realGameData;
 	/**
 	 * The initialization method for our robot which is called when we turn it on.
 	 * This method instantiates all the variables we created above and performs a
@@ -114,21 +114,21 @@ public class Robot extends IterativeRobot {
 			// Reads and submits (to the scheduler) the chose command from the
 			// SmartDhashboard
 
-
+		
 		// Sets up a logging system through Strongback (not sure about this)
 		Strongback.configure().recordNoData().recordNoCommands().recordNoEvents().useExecutionPeriod(200,
 				TimeUnit.MILLISECONDS);
 
 		// Sets up the two cameras, one facing forward and once facing backwards
 		UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture(0);
-		UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture(1);
+		//UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture(1);
 		camera1.setResolution(160, 120);
-		camera2.setResolution(160, 120);
+		//camera2.setResolution(160, 120);
 
 		// Enables compressor and immediately activates the solenoid to grasp the power
 		// cube
-		c.start();
-		c.setClosedLoopControl(true);
+		//c.start();
+		//c.setClosedLoopControl(true);
 		
 		exDub.set(DoubleSolenoid.Value.kForward);
 
@@ -266,11 +266,14 @@ public class Robot extends IterativeRobot {
 		 * ShuffleBoard to display the options and different data streams for our robot.
 		 * ShuffleBoard inherits from SmartDashboard
 		 */
+		realGameData = new GameDataState();
+		
+
 		autoChooser = new SendableChooser();
 
-		autoChooser.addDefault("Drop Left", new LeftDrop(lift_pulley, lift_elevator, drive, gyro, exDub));
-		autoChooser.addObject("Drop Right", new RightDrop(lift_pulley, lift_elevator, drive, gyro, exDub));
-		autoChooser.addObject("Drop Middle", new MiddleDrop(lift_pulley, lift_elevator, drive, gyro, exDub));
+		autoChooser.addDefault("Drop Left", new LeftDrop(realGameData, lift_pulley, lift_elevator, drive, gyro, exDub));
+		autoChooser.addObject("Drop Right", new RightDrop(realGameData, lift_pulley, lift_elevator, drive, gyro, exDub));
+		autoChooser.addObject("Drop Middle", new MiddleDrop(realGameData, lift_pulley, lift_elevator, drive, gyro, exDub));
 
 		autoChooser.addObject("Middle - don't drop", new MiddleCubeNone(drive, gyro));
 		autoChooser.addObject("Left - don't drop", new LeftCubeNone(drive, gyro));
@@ -288,10 +291,11 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		// Start Strongback functions ...
 		Strongback.start();
+		c.start();
 		c.setClosedLoopControl(true);
-		gameData = DriverStation.getInstance().getGameSpecificMessage();
-
-
+		
+		realGameData.setGameData(DriverStation.getInstance().getGameSpecificMessage());
+		
 		// Resets the Gyro to Zero degrees
 		gyro.reset();
 		System.out.println(gyro.getAngle());
@@ -321,7 +325,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopInit() {
-
+		c.start();
+		c.setClosedLoopControl(true);
 		// Kill any commands that might be lefotover from autonomous
 		Strongback.disable();
 		c.setClosedLoopControl(true);
