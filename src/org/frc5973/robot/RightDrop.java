@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class RightDrop extends CommandGroup {
-	private GameDataState data;
 	public RightDrop(String data, Motor lift_pulley, Motor life_elevator, TankDrive drive, GyroWrapper gyro, DoubleSolenoid exDub) {
 		// drop right
 		if (data.length() > 0) {
@@ -18,8 +17,9 @@ public class RightDrop extends CommandGroup {
 				sequentially(new RightCubeRight(drive, gyro), new ArmCommand(lift_pulley, life_elevator),
 						new ArmRelease(exDub));
 			} else if (data.charAt(0) == 'L') {
-				sequentially(new RightCubeLeft(drive, gyro), new ArmCommand(lift_pulley, life_elevator),
-						new ArmRelease(exDub));
+				sequentially(new RightCubeNone(drive, gyro));
+//				sequentially(new RightCubeLeft(drive, gyro), new ArmCommand(lift_pulley, life_elevator),
+//						new ArmRelease(exDub));
 			}
 		} else {
 			sequentially(new RightCubeNone(drive, gyro));
@@ -28,9 +28,6 @@ public class RightDrop extends CommandGroup {
 		
 	}
 	
-	public void setData(String newData) {
-		data.setGameData(newData);
-	}
 }
 
 // TODO

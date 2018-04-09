@@ -14,8 +14,9 @@ public class LeftDrop extends CommandGroup {
 		// drop right
 		if (data.length() > 0) {
 			if (data.charAt(0) == 'R') {
-				sequentially(new LeftCubeRight(drive, gyro), new ArmCommand(lift_pulley, lift_elevator),
-						new ArmRelease(exDub));
+				sequentially(new LeftCubeNone(drive, gyro));
+//				sequentially(new LeftCubeRight(drive, gyro), new ArmCommand(lift_pulley, lift_elevator),
+//						new ArmRelease(exDub));
 			}
 
 			else if (data.charAt(0) == 'L') {
